@@ -1,0 +1,57 @@
+Firstly, make and run broken, and we get a segment fault
+And then we use gdb backtrace and get to know that the 
+problem was 'strcpy'.
+To debug this problem we noticed that we did not initialize
+pointer char* work.second and we use strcpy to copy string
+into it(dangling pointer), which is very dangerous.
+So we add a 'malloc' before 'strcpy' to give work.second some
+space to use: "work.second = (char*)malloc(sizeof(char)*strlen(temp)+1);"
+Then we got: "hello world becomes (null)".
+
+So we followed the instruction to use gdb to see the results. 
+For the first issue, it is because the pointer temp points to
+the work.first, which means that both pointers(temp&work.first)
+points to the same memory space for the string, so when we
+change temp, we also change work.first, this makes the final
+output of work.first equals to temp, which is all lowercase
+characters. We can malloc a independent memory space for temp
+in the function: we change "char* temp = work.first;"
+to "char *temp = (char*)malloc(sizeof(char)*strlen(work.first)+1);"
+
+For the second issue, it is because the system will automatically
+free the local variables in the function, which means that when
+function process ended, the local variable work.second and the address
+in it will be cleared by the system(do not know where to point), 
+so you get a null when it returns to main function. 
+We can move the malloc sentence to the main function,in that way, 
+you will still process the memory for work.second when
+function process terminated. So we move: 
+"work.second = (char*)malloc(sizeof(char)*strlen(work.first)+1);"
+to main function after "work.first = argv[1]".
+
+Then we run and find out work.second miss the second-half string,
+this is because we do not do anything when the characters are 
+neither upper nor lower, we can optimise the for loop and getting
+rid of islower:
+int i;
+for(i=0;i<=strlen(work.first);i++){
+    char c = work.first[i];
+    if(isupper(c)){
+      temp[i] = tolower(c);
+    }
+    else{
+      temp[i] = c;
+    }
+}
+
+Then we run valgrind and get result of memory leak, so we have
+to add 'free' for those we malloc.
+
+And finally, we have to fix the bug inside the while loop. The 
+loop ignore the first part of the string because ptr has already
+plus 1 before the 'if', so we can fix this simply by moving the
+'ptr++' down to after "last_space = *ptr == ((char) ' ');".
+
+We also should add code to check the return value for malloc and 
+the command-line arguments number.
+
