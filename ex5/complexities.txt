@@ -1,0 +1,7 @@
+Algorithm	Worst case	Average case	Best case 
+Bubble		O(n^2)	
+Insertion	
+Bucket		
+Radix		
+
+
