@@ -1,14 +1,15 @@
 Algorithm, Length, ascending, descending, random
-bubble, 1000, , , 
-insertion, 1000, , , 
-bucket, 1000, , , 
-bubble, 10000, , , 
-insertion, 10000, , , 
-bucket, 10000, , , 
-bubble, 100000, , , 
-insertion, 100000, , , 
-bucket, 100000, , , 
-bubble, 1000000, , , 
-insertion, 1000000, , , 
-bucket, 1000000, , , 
+bubble,    1000,   0.004,      0.005,       0.005, 
+insertion, 1000,   0.003,      0.004,       0.004, 
+bucket,    1000,   0.003,      0.003,       0.003, 
+bubble,    10000,  0.128,      0.227,       0.257,
+insertion, 10000,  0.004,      0.154,       0.081,
+bucket,    10000,  0.005,      0.004,       0.005,
+(estimate:) 
+bubble,    100000, 12.8,       22.7,        25.7, 
+insertion, 100000, 0.4,        15.4,        8.1,
+bucket,    100000, 0.05,       0.04,        0.05
+bubble,    1000000, 1280,      2270,        2570, 
+insertion, 1000000, 40,        1540,        810, 
+bucket,    1000000, 0.5,       0.4,         0.5 
 

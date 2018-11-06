@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+#define array_size 1000000
 
 void bubble_sort(int a[], int n)
 {
@@ -22,12 +24,24 @@ void bubble_sort(int a[], int n)
 
 int main()
 {
-    //read file 'in'
-
+    //clock_t start_t, end_t, total_t;
+    //input array
+    int n = 0;
+    scanf("%d", &n);
+    int array[array_size];
+    for(int i = 0; i < n; i++)
+    {
+        scanf("%d", &array[i]);
+    }
+    //start_t = clock();
     //execute sort function
-
-    //calculate running time
-
-    //compare the results
+    bubble_sort(array, n);
+    for(int i = 0; i < n; i++)
+    {
+        printf("%d ", array[i]);
+    }
+    //end_t = clock();
+    //total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    //printf("Total time: %.3ld\n", total_t);
     return 0;
 }
