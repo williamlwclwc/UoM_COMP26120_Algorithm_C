@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include <time.h>
+//#include <time.h>
 #define array_size 1000000
 
 void insertion_sort(int a[], int n)
 {
-    int j = 0；
+    int j = 0;
     int temp = 0; //have to use temp for a[j+1] is a[i]
     for(int i = 1; i < n; i++)
     {

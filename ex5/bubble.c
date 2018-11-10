@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <time.h>
+//#include <time.h>
 #define array_size 1000000
 
 void bubble_sort(int a[], int n)

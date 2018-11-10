@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <time.h>
+//#include <time.h>
 #define Max_buckets 32768
 #define array_size 1000000
 
