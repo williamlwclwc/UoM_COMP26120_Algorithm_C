@@ -1,5 +1,5 @@
 #include <stdio.h>
-//#include <time.h>
+#include <time.h>
 #define array_size 1000000
 
 void insertion_sort(int a[], int n)
@@ -23,7 +23,9 @@ void insertion_sort(int a[], int n)
 
 int main()
 {
-    //clock_t start_t, end_t, total_t;
+    clock_t start_t, end_t;
+    double total_t;
+    start_t = clock();
     //input array
     int n = 0;
     scanf("%d", &n);
@@ -32,15 +34,14 @@ int main()
     {
         scanf("%d", &array[i]);
     }
-    //start_t = clock();
     //execute sort function
     insertion_sort(array, n);
     for(int i = 0; i < n; i++)
     {
         printf("%d ", array[i]);
     }
-    //end_t = clock();
-    //total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-    //printf("Total time: %.3ld\n", total_t);
+    end_t = clock();
+    total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+    //printf("Total time: %.3fs\n", total_t);
     return 0;
 }
