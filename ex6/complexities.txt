@@ -1,0 +1,7 @@
+Algorithm	Worst case	Average case	Best case 
+Bubble		O(n^2)	    O(n^2)          O(n^2)
+Insertion	O(n^2)      O(n^2)          O(n)
+Bucket		O(n+N)      O(n+N)          O(n+N)
+Radix		O(k(n+N))   O(k(n+N))       O(k(n+N))
+
+
