@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #define array_size 1000000
 
@@ -6,24 +7,33 @@
 int inPlacePartition(int a[], int start, int end)
 {
     int temp;
-    int r = end;
+    // select a random item in the array
+    // range from start to end
+    srand((unsigned) time(0));
+    int r = rand() % (end - start + 1) + start;
     // swap a[r] & a[end]
     temp = a[r];
     a[r] = a[end];
     a[end] = temp;
-    int p = a[end];
+    int pivot = a[end];
+    // "left" point to the start
     int l = start;
+    // "right" point to the end(except selected one)
     r = end - 1;
+    // as long as "left" do not meet "right"
     while(l <= r)
     {
-        while(l <= r && a[l] <= p)
+        // while left part < pivot, l moves on
+        while(l <= r && a[l] <= pivot)
         {
             l++;
         }
-        while(r >= l && a[r] >= p)
+        // while right part > pivot, r moves on
+        while(r >= l && a[r] >= pivot)
         {
             r--;
         }
+        // if both pointers stop, swap the numbers 
         if(l < r)
         {
             //swap a[l] & a[r]
@@ -32,6 +42,7 @@ int inPlacePartition(int a[], int start, int end)
             a[r] = temp;
         }
     }
+    // l = r, pivot = a[end]
     //swap a[l] & a[end]: put pivot into final place
     temp = a[l];
     a[l] = a[end];
@@ -44,14 +55,18 @@ void quick_sort(int a[], int start, int end)
     while(start < end)
     {
         int l = inPlacePartition(a, start, end);
+        // left subarray is smaller
+        // always sort the smaller one first to reduce the stack space
         if(l - start < end - l)
         {
             quick_sort(a, start, l - 1);
+            // left part is sorted
             start = l + 1;
         }
         else
         {
             quick_sort(a, l + 1, end);
+            // right part is sorted
             end = l - 1;
         }
     }
