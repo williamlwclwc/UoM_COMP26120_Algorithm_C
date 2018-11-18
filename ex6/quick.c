@@ -76,6 +76,7 @@ int main()
 {
     clock_t start_t, end_t;
     double total_t;
+    start_t = clock();
     //input array
     int n = 0;
     scanf("%d", &n);
@@ -84,7 +85,6 @@ int main()
     {
         scanf("%d", &array[i]);
     }
-    start_t = clock();
     //execute sort function
     quick_sort(array, 0, n-1);
     for(int i = 0; i < n; i++)
