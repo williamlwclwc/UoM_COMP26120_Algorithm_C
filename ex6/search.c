@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#define MAX_LEN_STRING 25
+#define MAX_LEN_STRING 26
 
 // in place quick sort
 int inPlacePartitionString(char a[][MAX_LEN_STRING], int start, int end)

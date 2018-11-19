@@ -3,7 +3,7 @@
 #include <sys/types.h>
 #include <string.h>
 #include <time.h>
-#define MAX_LEN_STRING 25
+#define MAX_LEN_STRING 26
 
 extern void QuickSortString(char a[][MAX_LEN_STRING], int start, int end);
 extern int BinarySearch(char a[][MAX_LEN_STRING], int len, char* target);

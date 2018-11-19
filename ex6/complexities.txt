@@ -4,6 +4,6 @@ Insertion	O(n^2)      O(n^2)          O(n)
 Bucket		O(n+N)      O(n+N)          O(n+N)
 Radix		O(k(n+N))   O(k(n+N))       O(k(n+N))
 Merge       O(nlogn)    O(nlogn)        O(nlogn)
-Quick       O(nlogn)    O(n^2)          O(nlogn)
+Quick       O(n^2)      O(nlogn)        O(nlogn)
 
 
