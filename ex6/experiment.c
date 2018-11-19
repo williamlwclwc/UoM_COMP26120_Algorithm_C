@@ -37,15 +37,16 @@ int main()
     end_t = clock();
     total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
     sort_t = total_t;
-
-    for(m = 1117; m <= 1137; m += 2)
+    
+    int queryNum;
+    for(queryNum = 1100; queryNum <= 1150; queryNum += 5)
     {
-        // current value of m
-        printf("m = %d\n", m);
+        // current number of queries
+        printf("Number of queries = %d\n", queryNum);
         // binary search
         start_t = clock();
         int searchResult = -1;
-        for(int i = 0; i < m; i++)
+        for(int i = 0; i < queryNum; i++)
         {
             searchResult = BinarySearch(str, n, query[i]);
             if(searchResult == -1)
@@ -66,7 +67,7 @@ int main()
         // linear search
         start_t = clock();
         int flag = 0;
-        for(int i = 0; i < m; i++)
+        for(int i = 0; i < queryNum; i++)
         {
             flag = 0;
             for(int j = 0; j < n; j++)
