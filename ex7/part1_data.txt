@@ -1,0 +1,39 @@
+0
+ 
+Does it have a tail?
+1
+2
+1
+pangolin
+ 
+-1
+-1
+0
+ 
+Is it flat, round and edible？
+3
+4
+0
+ 
+Can you dip it in your tea?
+5
+6
+1
+Pete
+ 
+-1
+-1
+1
+a biscuit
+ 
+-1
+-1
+1
+a pizza
+ 
+-1
+-1
+
+ 
+
+
