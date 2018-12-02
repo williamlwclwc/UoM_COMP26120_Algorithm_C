@@ -302,7 +302,7 @@ int main()
         else if(check_no(reply))
         {
             game_continue = 0;
-            printf("Goodbye.\n");
+            printf("See you then.\n");
         }
         else
         {

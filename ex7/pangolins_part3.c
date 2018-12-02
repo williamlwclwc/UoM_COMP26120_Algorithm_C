@@ -88,19 +88,27 @@ void treePrintToFile(FILE* fp, node *p)
     }
 }
 
-// load a tree from a txt file
+// load a tree from a file
 node* treeLoadFromFile(FILE *fp)
 {
-    int type = 0;
+    int type = -1;
+    int len = 0;
     if(fscanf(fp, "%d", &type) == 0)
     {
         return NULL;
     }
+    fgetc(fp);
     node* root = (node*)malloc(sizeof(node));
     if(type == 0)
     {
         root->type = 0;
+        root->question = (char*)malloc(MAX_LEN);
         fgets(root->question, MAX_LEN, fp);
+        len = strlen(root->question);
+        if(root->question[len-1] == '\n')
+        {
+            root->question[len-1] = '\0';
+        }
         root->obj = NULL;
         root->yes = treeLoadFromFile(fp);
         root->no = treeLoadFromFile(fp);
@@ -108,7 +116,13 @@ node* treeLoadFromFile(FILE *fp)
     else
     {
         root->type = 1;
+        root->obj = (char*)malloc(MAX_LEN);
         fgets(root->obj, MAX_LEN, fp);
+        len = strlen(root->obj);
+        if(root->obj[len-1] == '\n')
+        {
+            root->obj[len-1] = '\0';
+        }
         root->question = NULL;
         root->yes = NULL;
         root->no = NULL;
@@ -196,6 +210,7 @@ node* on_start()
         if(fp != NULL)
         {
             root = treeLoadFromFile(fp);
+            fclose(fp);
         }
     }
     else if(check_no(reply))
@@ -240,10 +255,12 @@ void on_end(node *current)
         {
             treePrintToFile(fp, current);
             fclose(fp);
+            printf("Progress saved. Bye.\n");
         }
     }
     else if(check_no(reply))
     {
+        printf("Ok. Bye.\n");
         return;
     }
     else
@@ -264,6 +281,10 @@ int main()
 
     // program starts
     node* current = on_start();
+    if(current->type == 0)
+    {
+        first_question = current;
+    }
     printf("OK, please think of something.\n");
     // while not finished
     while(game_continue)
@@ -433,7 +454,7 @@ int main()
         else if(check_no(reply))
         {
             game_continue = 0;
-            printf("Goodbye.\n");
+            printf("See you then.\n");
         }
         else
         {
