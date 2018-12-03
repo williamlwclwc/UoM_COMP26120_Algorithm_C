@@ -190,7 +190,6 @@ int check_no(char* reply)
 // when program starts
 node* on_start()
 {
-    printf("Do you wish to load the game?\n");
     char reply[MAX_LEN];
     char filename[MAX_LEN];
     int len = 0;
@@ -198,6 +197,7 @@ node* on_start()
     node *root = NULL;
     while(1)
     {
+        printf("Do you wish to load the game?\n");
         fgets(reply, MAX_LEN, stdin);
         len = strlen(reply);
         if(reply[len-1] == '\n')
@@ -213,8 +213,12 @@ node* on_start()
             {
                 root = treeLoadFromFile(fp);
                 fclose(fp);
+                if(root != NULL)
+                {
+                    break; // file is not empty
+                }
             }
-            break;
+            printf("The file is not working, please try again.\n");
         }
         else if(check_no(reply))
         {
@@ -243,9 +247,9 @@ void on_end(node *current)
     char filename[MAX_LEN];
     FILE *fp;
     int len = 0;
-    printf("Do you wish to save your game?\n");
     while(1)
     {
+        printf("Do you wish to save your game?\n");
         fgets(reply, MAX_LEN, stdin);
         len = strlen(reply);
         if(reply[len-1] == '\n')
@@ -262,8 +266,9 @@ void on_end(node *current)
                 treePrintToFile(fp, current);
                 fclose(fp);
                 printf("Progress saved. Bye.\n");
+                break;
             }
-            break;
+            printf("The file is not working, please try again. \n");
         }
         else if(check_no(reply))
         {
