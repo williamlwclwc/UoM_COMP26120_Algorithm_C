@@ -13,3 +13,7 @@ COMP26120 Algorithms and Imperative Programming Labs
 ## Lab5: Iterative Sort(Bubble, Insertion, Buckets)
 
 ## Lab6: Recursive Sort(Merge, Quick, Binary search)
+
+## Lab7: Pangolins game based on tree structure
+
+## Lab8: Spellchecker based on tree and hash-table structures
