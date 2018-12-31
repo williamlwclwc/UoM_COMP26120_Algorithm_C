@@ -108,7 +108,7 @@ Table initialize_table (Table_size size)
 Table insert (Key_Type new_key, Table head) 
 {
 	// select the hash and probing method
-	int hash_type, probing_type;
+	int hash_type = poly, probing_type = double_hash;
 	if(mode == 0)
 	{
 		hash_type = lin_hash;
@@ -185,7 +185,7 @@ Table insert (Key_Type new_key, Table head)
 
 Boolean find (Key_Type new_key, Table head) 
 {
-	int hash_type, probing_type;
+	int hash_type = poly, probing_type = double_hash;
 	if(mode == 0)
 	{
 		hash_type = lin_hash;
