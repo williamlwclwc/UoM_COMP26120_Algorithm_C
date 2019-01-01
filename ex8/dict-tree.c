@@ -15,6 +15,7 @@ struct node
   Key_Type element; // only data is the key itself
   tree_ptr left, right;
   // add anything else that you need
+  tree_ptr parent;
 };
 
 struct table 
@@ -24,6 +25,7 @@ struct table
 };
 
 void free_tree (tree_ptr p);
+int calDepth(tree_ptr p);
 
 Table initialize_table(/*ignore parameter*/) 
 {
@@ -31,6 +33,45 @@ Table initialize_table(/*ignore parameter*/)
 	Table root = (Table)malloc(sizeof(struct table));
 	root->head = NULL;
 	return root;
+}
+
+// avl tree rotation
+tree_ptr left_left_rotation(tree_ptr parent)
+{
+	tree_ptr new_parent = parent->left;
+	// adjust parent pointers
+	new_parent->parent = parent->parent;
+	new_parent->right->parent = parent;
+	parent->parent = new_parent;
+	// adjust children pointers
+	parent->left = new_parent->right; // parent->left points to new->right
+	new_parent->right = parent; // let new be the parent
+	return new_parent;
+}
+
+tree_ptr right_right_rotation(tree_ptr parent)
+{
+	tree_ptr new_parent = parent->right;
+	// adjust parent pointers
+	new_parent->parent = parent->parent;
+	new_parent->left->parent = parent;
+	parent->parent = new_parent;
+	// adjust children pointers
+	parent->right = new_parent->left;
+	new_parent->left = parent;
+	return new_parent;
+}
+
+tree_ptr left_right_rotation(tree_ptr parent)
+{
+	parent->left = right_right_rotation(parent->left);
+	return left_left_rotation(parent);
+}
+
+tree_ptr right_left_rotation(tree_ptr parent)
+{
+	parent->right = left_left_rotation(parent->right);
+	return right_right_rotation(parent);
 }
 
 Table insert(Key_Type new_key,Table root) 
@@ -52,13 +93,16 @@ Table insert(Key_Type new_key,Table root)
 		new_empty1->element = NULL;
 		new_empty1->left = NULL;
 		new_empty1->right = NULL;
+		new_empty1->parent = new;
 		tree_ptr new_empty2 = (tree_ptr)malloc(sizeof(struct node));
 		if(new_empty2 == NULL) exit(-1);
 		new_empty2->element = NULL;
 		new_empty2->left = NULL;
 		new_empty2->right = NULL;
+		new_empty2->parent = new;
 		new->left = new_empty1;
 		new->right = new_empty2;
+		new->parent = NULL;
 		root->head = new;
 		return root;
 	}
@@ -68,7 +112,6 @@ Table insert(Key_Type new_key,Table root)
 	{
 		return root;
 	}
-	// ordered balanced tree / binary search tree
 	// find the right place(a NULL_NODE node) for new_key
 	tree_ptr p = root->head;
 	while(p->element != NULL)
@@ -91,14 +134,91 @@ Table insert(Key_Type new_key,Table root)
 	new_empty1->element = NULL;
 	new_empty1->left = NULL;
 	new_empty1->right = NULL;
+	new_empty1->parent = p;
 	tree_ptr new_empty2 = (tree_ptr)malloc(sizeof(struct node));
 	if(new_empty2 == NULL) exit(-1);
 	new_empty2->element = NULL;
 	new_empty2->left = NULL;
 	new_empty2->right = NULL;
+	new_empty2->parent = p;
 	p->left = new_empty1;
 	p->right = new_empty2;
-	return root;
+	if(mode == 0)
+	{
+		// ordered balanced tree / binary search tree
+		return root;
+	}
+	else if(mode == 1)
+	{
+		tree_ptr parent = p;
+		tree_ptr last_parent; 
+		while(parent != NULL)
+		{
+			// avl tree auto balance
+			if(strcmp(new_key, parent->element) <= 0)
+			{
+				// insert into left child
+				if(calDepth(parent->left)-calDepth(parent->right) > 1)
+				{
+					// lose balance
+					if(strcmp(new_key, parent->left->element) < 0)
+					{
+						// left left rotation
+						parent = left_left_rotation(parent);
+					}
+					else
+					{
+						// left right rotation
+						parent = left_right_rotation(parent);
+					}
+					if(parent->parent != NULL)
+					{
+						if(strcmp(parent->element, parent->parent->element) > 0)
+							parent->parent->right = parent;
+						else
+							parent->parent->left = parent;
+					}
+				}
+			}
+			else
+			{
+				// insert into right child
+				if(calDepth(parent->right)-calDepth(parent->left) > 1)
+				{
+					// lose balance
+					if(strcmp(new_key, parent->right->element) > 0)
+					{
+						// right right rotation
+						parent = right_right_rotation(parent);
+					}
+					else
+					{
+						// right left rotation
+						parent = right_left_rotation(parent); 
+					}
+					if(parent->parent != NULL)
+					{
+						if(strcmp(parent->element, parent->parent->element) > 0)
+							parent->parent->right = parent;
+						else
+							parent->parent->left = parent;
+					}
+				}
+			}
+			last_parent = parent;
+			parent = parent->parent;
+		}
+		if(parent == NULL)
+		{
+			root->head = last_parent;
+		}
+		return root;
+	}
+	else
+	{
+		printf("mode error.\n");
+		exit(-1);
+	}
 }
 
 Boolean find(Key_Type target, Table root) 
