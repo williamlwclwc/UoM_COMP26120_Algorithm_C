@@ -63,10 +63,11 @@ Table_size compress_func (Table_size index, Table_size table_size)
 }
 
 // collision handle function
-Table_size collision_func(Table_size index, int type)
+Table_size collision_func(Table_size index, int type, Table_size index0)
 {
 	static int j; // for quadratic & double hash
-	int q = 7; // a prime number
+	static int index2;
+	int q = 97; // a prime number
 	// linear probing
 	if(type == linear)
 	{
@@ -76,16 +77,21 @@ Table_size collision_func(Table_size index, int type)
 	else if(type == quadratic)
 	{
 		j++;
-		index = index + j*j;
+		index = index - index2;
+		index2 = j*j;
+		index = index + index2;
 	}
 	else if(type == clear)
 	{
 		j = 0;
+		index2 = 0;
 	}
 	else if(type == double_hash)
 	{
 		j++;
-		index = index + j*(q-(index % q));
+		index = index - index2;
+		index2 = j*(q-(index0 % q));
+		index = index + index2;
 	}
 	return index;
 }
@@ -137,6 +143,7 @@ Table insert (Key_Type new_key, Table head)
 	}
 	cell* p = head->cells;
 	Table_size index = hash_func(new_key, hash_type);
+	Table_size index0 = index;
 	index = compress_func(index, head->table_size);
 	while(p[index].state == in_use)
 	{
@@ -145,7 +152,7 @@ Table insert (Key_Type new_key, Table head)
 		{
 			return head;
 		}
-		index = collision_func(index, probing_type);
+		index = collision_func(index, probing_type, index0);
 		head->collisions++;
 		if(index >= head->table_size)
 		{
@@ -158,7 +165,7 @@ Table insert (Key_Type new_key, Table head)
 	head->num_entries++;
 	if(probing_type == quadratic || probing_type == double_hash)
 	{
-		collision_func(index, clear);
+		collision_func(index, clear, index0);
 	}
 	// check rehash
 	if(AUTO_REHASH && head->table_size / head->num_entries < 2)
@@ -208,11 +215,12 @@ Boolean find (Key_Type new_key, Table head)
 	}
 	cell* p = head->cells;
 	Table_size index = hash_func(new_key, hash_type);
+	Table_size index0 = index;
 	index = compress_func(index, head->table_size);
 	Table_size start_point = index;
 	while(p[index].element == NULL || strcmp(p[index].element, new_key) != 0)
 	{
-		index = collision_func(index, probing_type);
+		index = collision_func(index, probing_type, index0);
 		if(index >= head->table_size)
 		{
 			index = compress_func(index, head->table_size);
@@ -222,7 +230,7 @@ Boolean find (Key_Type new_key, Table head)
 		{
 			if(probing_type == quadratic || probing_type == double_hash)
 			{
-				collision_func(index, clear);
+				collision_func(index, clear, index0);
 			}
 			return FALSE;
 		}
@@ -230,7 +238,7 @@ Boolean find (Key_Type new_key, Table head)
 	// found a match
 	if(probing_type == quadratic || probing_type == double_hash)
 	{
-		collision_func(index, clear);
+		collision_func(index, clear, index0);
 	}
 	return TRUE;
 }
