@@ -8,7 +8,7 @@
 #include "dict.h"
 
 #define WORD_SIZE 50
-#define AUTO_REHASH 0
+#define AUTO_REHASH 1
 enum {poly, lin_hash};
 enum {linear, quadratic, clear, double_hash};
 
@@ -67,7 +67,7 @@ Table_size collision_func(Table_size index, int type, Table_size index0)
 {
 	static int j; // for quadratic & double hash
 	static int index2;
-	int q = 97; // a prime number
+	int q = 7; // a prime number
 	// linear probing
 	if(type == linear)
 	{
@@ -115,12 +115,12 @@ Table insert (Key_Type new_key, Table head)
 {
 	// select the hash and probing method
 	int hash_type = poly, probing_type = double_hash;
-	if(mode == 0)
+	if(mode == 4)
 	{
 		hash_type = lin_hash;
 		probing_type = quadratic;
 	}
-	else if(mode == 1)
+	else if(mode == 3)
 	{
 		hash_type = poly;
 		probing_type = linear;
@@ -130,7 +130,7 @@ Table insert (Key_Type new_key, Table head)
 		hash_type = poly;
 		probing_type = quadratic;
 	}
-	else if(mode == 3)
+	else if(mode == 1)
 	{
 		hash_type = poly;
 		probing_type = double_hash;
@@ -193,12 +193,12 @@ Table insert (Key_Type new_key, Table head)
 Boolean find (Key_Type new_key, Table head) 
 {
 	int hash_type = poly, probing_type = double_hash;
-	if(mode == 0)
+	if(mode == 4)
 	{
 		hash_type = lin_hash;
 		probing_type = quadratic;
 	}
-	else if(mode == 1)
+	else if(mode == 3)
 	{
 		hash_type = poly;
 		probing_type = linear;
@@ -208,7 +208,7 @@ Boolean find (Key_Type new_key, Table head)
 		hash_type = poly;
 		probing_type = quadratic;
 	}
-	else if(mode == 3)
+	else if(mode == 1)
 	{
 		hash_type = poly;
 		probing_type = double_hash;
@@ -218,15 +218,20 @@ Boolean find (Key_Type new_key, Table head)
 	Table_size index0 = index;
 	index = compress_func(index, head->table_size);
 	Table_size start_point = index;
-	while(p[index].element == NULL || strcmp(p[index].element, new_key) != 0)
+	// if hash result is empty, then not found
+	if(p[index].state == empty)
+	{
+		return FALSE;
+	}
+	while(strcmp(p[index].element, new_key) != 0)
 	{
 		index = collision_func(index, probing_type, index0);
 		if(index >= head->table_size)
 		{
 			index = compress_func(index, head->table_size);
 		}
-		// probing through all hash and still not found
-		if(index == start_point)
+		// probing through all hash and still not found or reach empty
+		if(index == start_point || p[index].state == empty)
 		{
 			if(probing_type == quadratic || probing_type == double_hash)
 			{

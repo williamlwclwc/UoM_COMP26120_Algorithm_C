@@ -143,12 +143,12 @@ Table insert(Key_Type new_key,Table root)
 	new_empty2->parent = p;
 	p->left = new_empty1;
 	p->right = new_empty2;
-	if(mode == 0)
+	if(mode == 1)
 	{
 		// ordered balanced tree / binary search tree
 		return root;
 	}
-	else if(mode == 1)
+	else if(mode == 2)
 	{
 		tree_ptr parent = p;
 		tree_ptr last_parent; 
