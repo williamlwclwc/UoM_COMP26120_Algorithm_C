@@ -35,7 +35,7 @@ Table_size hash_func (Key_Type key, int type)
 	int result = 0;
 	if(type == poly)
 	{
-		int a = 33; // 33, 37, 39, 41 are better according to textbook
+		int a = 39; // 33, 37, 39, 41 are better according to textbook
 		// Horner's rule
 		for(int i = 0; i < strlen(key); i++)
 		{

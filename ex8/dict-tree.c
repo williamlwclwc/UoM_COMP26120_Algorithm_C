@@ -16,6 +16,7 @@ struct node
   tree_ptr left, right;
   // add anything else that you need
   tree_ptr parent;
+  int avl_height; // height info needed by avl
 };
 
 struct table 
@@ -26,6 +27,14 @@ struct table
 
 void free_tree (tree_ptr p);
 int calDepth(tree_ptr p);
+
+int max(int a, int b)
+{
+	if(a >= b)
+		return a;
+	else
+		return b;
+}
 
 Table initialize_table(/*ignore parameter*/) 
 {
@@ -46,6 +55,9 @@ tree_ptr left_left_rotation(tree_ptr parent)
 	// adjust children pointers
 	parent->left = new_parent->right; // parent->left points to new->right
 	new_parent->right = parent; // let new be the parent
+	// adjust height
+	parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
+	new_parent->avl_height = max(new_parent->left->avl_height, new_parent->right->avl_height) + 1;
 	return new_parent;
 }
 
@@ -59,6 +71,9 @@ tree_ptr right_right_rotation(tree_ptr parent)
 	// adjust children pointers
 	parent->right = new_parent->left;
 	new_parent->left = parent;
+	// adjust height
+	parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
+	new_parent->avl_height = max(new_parent->left->avl_height, new_parent->right->avl_height) + 1;
 	return new_parent;
 }
 
@@ -103,6 +118,10 @@ Table insert(Key_Type new_key,Table root)
 		new->left = new_empty1;
 		new->right = new_empty2;
 		new->parent = NULL;
+		// cal height
+		new->avl_height = 1;
+		new_empty1->avl_height = 0;
+		new_empty2->avl_height = 0;
 		root->head = new;
 		return root;
 	}
@@ -135,12 +154,14 @@ Table insert(Key_Type new_key,Table root)
 	new_empty1->left = NULL;
 	new_empty1->right = NULL;
 	new_empty1->parent = p;
+	new_empty1->avl_height = 0;
 	tree_ptr new_empty2 = (tree_ptr)malloc(sizeof(struct node));
 	if(new_empty2 == NULL) exit(-1);
 	new_empty2->element = NULL;
 	new_empty2->left = NULL;
 	new_empty2->right = NULL;
 	new_empty2->parent = p;
+	new_empty1->avl_height = 0;
 	p->left = new_empty1;
 	p->right = new_empty2;
 	if(mode == 1)
@@ -158,7 +179,7 @@ Table insert(Key_Type new_key,Table root)
 			if(strcmp(new_key, parent->element) <= 0)
 			{
 				// insert into left child
-				if(calDepth(parent->left)-calDepth(parent->right) > 1)
+				if(parent->left->avl_height-parent->right->avl_height > 1)
 				{
 					// lose balance
 					if(strcmp(new_key, parent->left->element) < 0)
@@ -183,7 +204,7 @@ Table insert(Key_Type new_key,Table root)
 			else
 			{
 				// insert into right child
-				if(calDepth(parent->right)-calDepth(parent->left) > 1)
+				if(parent->right->avl_height-parent->left->avl_height > 1)
 				{
 					// lose balance
 					if(strcmp(new_key, parent->right->element) > 0)
@@ -206,6 +227,7 @@ Table insert(Key_Type new_key,Table root)
 				}
 			}
 			last_parent = parent;
+			parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
 			parent = parent->parent;
 		}
 		if(parent == NULL)
