@@ -27,14 +27,11 @@ struct table
 
 void free_tree (tree_ptr p);
 int calDepth(tree_ptr p);
-
-int max(int a, int b)
-{
-	if(a >= b)
-		return a;
-	else
-		return b;
-}
+int max(int a, int b);
+tree_ptr left_left_rotation(tree_ptr parent);
+tree_ptr right_right_rotation(tree_ptr parent);
+tree_ptr right_left_rotation(tree_ptr parent);
+tree_ptr left_right_rotation(tree_ptr parent);
 
 Table initialize_table(/*ignore parameter*/) 
 {
@@ -42,51 +39,6 @@ Table initialize_table(/*ignore parameter*/)
 	Table root = (Table)malloc(sizeof(struct table));
 	root->head = NULL;
 	return root;
-}
-
-// avl tree rotation
-tree_ptr left_left_rotation(tree_ptr parent)
-{
-	tree_ptr new_parent = parent->left;
-	// adjust parent pointers
-	new_parent->parent = parent->parent;
-	new_parent->right->parent = parent;
-	parent->parent = new_parent;
-	// adjust children pointers
-	parent->left = new_parent->right; // parent->left points to new->right
-	new_parent->right = parent; // let new be the parent
-	// adjust height
-	parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
-	new_parent->avl_height = max(new_parent->left->avl_height, new_parent->right->avl_height) + 1;
-	return new_parent;
-}
-
-tree_ptr right_right_rotation(tree_ptr parent)
-{
-	tree_ptr new_parent = parent->right;
-	// adjust parent pointers
-	new_parent->parent = parent->parent;
-	new_parent->left->parent = parent;
-	parent->parent = new_parent;
-	// adjust children pointers
-	parent->right = new_parent->left;
-	new_parent->left = parent;
-	// adjust height
-	parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
-	new_parent->avl_height = max(new_parent->left->avl_height, new_parent->right->avl_height) + 1;
-	return new_parent;
-}
-
-tree_ptr left_right_rotation(tree_ptr parent)
-{
-	parent->left = right_right_rotation(parent->left);
-	return left_left_rotation(parent);
-}
-
-tree_ptr right_left_rotation(tree_ptr parent)
-{
-	parent->right = left_left_rotation(parent->right);
-	return right_right_rotation(parent);
 }
 
 Table insert(Key_Type new_key,Table root) 
@@ -300,39 +252,6 @@ void print_table(Table root)
 	}
 }
 
-int calDepth(tree_ptr p)
-{
-	int leftDepth = 0, rightDepth = 0;
-	if(p == NULL)
-	{
-		return -1;
-	}
-	if(p->left == NULL)
-	{
-		leftDepth = -1;
-	}
-	else
-	{
-		leftDepth = calDepth(p->left);
-	}
-	if(p->right == NULL)
-	{
-		rightDepth = -1;
-	}
-	else
-	{
-		rightDepth = calDepth(p->right);
-	}
-	if(leftDepth >= rightDepth)
-	{
-		return leftDepth + 1;
-	}
-	else
-	{
-		return rightDepth + 1;
-	}
-}
-
 void print_stats (Table root) 
 {
 	// calculate depth of the binary tree
@@ -370,4 +289,90 @@ void free_tree(tree_ptr p)
 		}
 		free(p);
 	}
+}
+
+int calDepth(tree_ptr p)
+{
+	int leftDepth = 0, rightDepth = 0;
+	if(p == NULL)
+	{
+		return -1;
+	}
+	if(p->left == NULL)
+	{
+		leftDepth = -1;
+	}
+	else
+	{
+		leftDepth = calDepth(p->left);
+	}
+	if(p->right == NULL)
+	{
+		rightDepth = -1;
+	}
+	else
+	{
+		rightDepth = calDepth(p->right);
+	}
+	if(leftDepth >= rightDepth)
+	{
+		return leftDepth + 1;
+	}
+	else
+	{
+		return rightDepth + 1;
+	}
+}
+
+int max(int a, int b)
+{
+	if(a >= b)
+		return a;
+	else
+		return b;
+}
+
+// avl tree rotation
+tree_ptr left_left_rotation(tree_ptr parent)
+{
+	tree_ptr new_parent = parent->left;
+	// adjust parent pointers
+	new_parent->parent = parent->parent;
+	new_parent->right->parent = parent;
+	parent->parent = new_parent;
+	// adjust children pointers
+	parent->left = new_parent->right; // parent->left points to new->right
+	new_parent->right = parent; // let new be the parent
+	// adjust height
+	parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
+	new_parent->avl_height = max(new_parent->left->avl_height, new_parent->right->avl_height) + 1;
+	return new_parent;
+}
+
+tree_ptr right_right_rotation(tree_ptr parent)
+{
+	tree_ptr new_parent = parent->right;
+	// adjust parent pointers
+	new_parent->parent = parent->parent;
+	new_parent->left->parent = parent;
+	parent->parent = new_parent;
+	// adjust children pointers
+	parent->right = new_parent->left;
+	new_parent->left = parent;
+	// adjust height
+	parent->avl_height = max(parent->left->avl_height, parent->right->avl_height) + 1;
+	new_parent->avl_height = max(new_parent->left->avl_height, new_parent->right->avl_height) + 1;
+	return new_parent;
+}
+
+tree_ptr left_right_rotation(tree_ptr parent)
+{
+	parent->left = right_right_rotation(parent->left);
+	return left_left_rotation(parent);
+}
+
+tree_ptr right_left_rotation(tree_ptr parent)
+{
+	parent->right = left_left_rotation(parent->right);
+	return right_right_rotation(parent);
 }
