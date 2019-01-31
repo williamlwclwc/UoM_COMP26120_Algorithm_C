@@ -70,7 +70,7 @@ Table insert(Key_Type new_key,Table root)
 		new->left = new_empty1;
 		new->right = new_empty2;
 		new->parent = NULL;
-		// cal height
+		// set height
 		new->avl_height = 1;
 		new_empty1->avl_height = 0;
 		new_empty2->avl_height = 0;

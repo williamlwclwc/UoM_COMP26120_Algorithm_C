@@ -81,11 +81,11 @@ Table insert (Key_Type new_key, Table head)
 	Table_size index = hash_func(new_key, hash_type);
 	Table_size index0 = index;
 	index = compress_func(index, head->table_size);
-	// if(strcmp("fare", new_key)==0)
-	// {
-	// 	printf("%d\n", index);
-	// }
-	collision_func(index, clear, index0);
+	// clear static variable before probing
+	if(probing_type == quadratic || probing_type == double_hash)
+	{
+		collision_func(index, clear, index0);
+	}
 	while(p[index].state == in_use)
 	{
 		// check duplicate
@@ -94,10 +94,6 @@ Table insert (Key_Type new_key, Table head)
 			return head;
 		}
 		index = collision_func(index, probing_type, index0);
-	// 	if(strcmp("fare", new_key)==0)
-	// {
-	// 	printf("%d\n", index);
-	// }
 		head->collisions++;
 		if(index >= head->table_size)
 		{
@@ -108,10 +104,6 @@ Table insert (Key_Type new_key, Table head)
 	strcpy(p[index].element, new_key);
 	p[index].state = in_use;
 	head->num_entries++;
-	if(probing_type == quadratic || probing_type == double_hash)
-	{
-		collision_func(index, clear, index0);
-	}
 	// check rehash
 	if(AUTO_REHASH && head->table_size / head->num_entries < 2)
 	{
@@ -162,11 +154,6 @@ Boolean find (Key_Type new_key, Table head)
 	Table_size index = hash_func(new_key, hash_type);
 	Table_size index0 = index;
 	index = compress_func(index, head->table_size);
-	// if(strcmp("fare", new_key)==0)
-	// {
-	// 	printf("%d\n", index);
-	// }
-	Table_size start_point = index;
 	// if hash result is empty, then not found
 	if(p[index].state == empty)
 	{
@@ -179,11 +166,7 @@ Boolean find (Key_Type new_key, Table head)
 		{
 			index = compress_func(index, head->table_size);
 		}
-	// 	if(strcmp("fare", new_key)==0)
-	// {
-	// 	printf("%d\n", index);
-	// }
-		// probing through all hash and still not found or reach empty
+		// probing and reach empty
 		if( p[index].state == empty)
 		{
 			if(probing_type == quadratic || probing_type == double_hash)
@@ -296,7 +279,7 @@ Table_size collision_func(Table_size index, int type, Table_size index0)
 	{
 		j++;
 		index = index - index2;
-		index2 = j*(q-(index0 % q));
+		index2 = j*(q-(index0 % q)); // double hash
 		index = index + index2;
 	}
 	return index;
