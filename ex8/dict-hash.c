@@ -110,10 +110,10 @@ Table insert (Key_Type new_key, Table head)
 	p[index].state = in_use;
 	head->num_entries++;
 	// check rehash
-	if(AUTO_REHASH && (double)head->num_entries / head->table_size > 0.75)
+	if((AUTO_REHASH && (double)head->num_entries / head->table_size > 0.75) || head->table_size % q == 0)
 	{
 		// rehash when used / total > 0.75
-		Table_size new_size = head->table_size * 2;
+		Table_size new_size = head->table_size * 2 + 1;
 		Table new_head = initialize_table(new_size);
 		int i = 0, cnt = 0;
 		p = head->cells;
