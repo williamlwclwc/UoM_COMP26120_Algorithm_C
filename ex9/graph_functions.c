@@ -2,11 +2,14 @@
 
 #define MAX_NAME_LEN 20
 
-Graph* initialize_graph (Graph *mygraph, int MaxSize) 
+// Important: you do not need to allocate memory for
+// mygraph. Currently this is already allocated on
+// the stack in the stub for part1 and read_graph
+// passes a pointer to this stack-allocated graph
+// into this function
+int initialize_graph (Graph *mygraph, int MaxSize) 
 {
   // your code goes here
-  mygraph = (Graph*)malloc(sizeof(Graph));
-  check(mygraph, "mygraph");
   mygraph->name = (char*)malloc(MAX_NAME_LEN);
   check(mygraph->name, "name");
   strcpy(mygraph->name, "Graph 1");
@@ -14,16 +17,15 @@ Graph* initialize_graph (Graph *mygraph, int MaxSize)
   check(mygraph->table, "nodes");
   mygraph->num = 0;
   mygraph->MaxSize = MaxSize;
-  return mygraph;
+  return 0;
 }
-Graph* insert_graph_node (Graph *mygraph, int n, char *name) 
+int insert_graph_node (Graph *mygraph, int n, char *name) 
 {
   // your code goes here
-  // check if index is occupied?
   if(n >= mygraph->MaxSize)
   {
     printf("invalid index\n");
-    return NULL;
+    return -1;
   }
   mygraph->table[n].name = (char*)malloc(MAX_NAME_LEN);
   check(mygraph->table[n].name, "name");
@@ -31,9 +33,9 @@ Graph* insert_graph_node (Graph *mygraph, int n, char *name)
   mygraph->table[n].outlist = NULL;
   mygraph->table[n].outdegree = 0;
   mygraph->num++;
-  return mygraph;
+  return 0;
 }
-Graph* insert_graph_link (Graph *mygraph, int source, int target) 
+int insert_graph_link (Graph *mygraph, int source, int target) 
 {
   // your code goes here
   List* new = (List*)malloc(sizeof(List));
@@ -42,12 +44,12 @@ Graph* insert_graph_link (Graph *mygraph, int source, int target)
   if(source > mygraph->num)
   {
     printf("Please check 'source'\n");
-    return NULL;
+    return -1;
   }
   new->next = mygraph->table[source].outlist;
   mygraph->table[source].outlist = new;
   mygraph->table[source].outdegree++;
-  return mygraph;
+  return 0;
 }
 // use to check result of strdup, malloc etc.
 void check (void *memory, char *message) 
@@ -58,7 +60,7 @@ void check (void *memory, char *message)
     exit (3);
   }
 }
-Graph* read_graph (Graph *mygraph, char *filename)
+int read_graph (Graph *mygraph, char *filename)
 /* 
  * Reads in graph from FILE *filename which is of .gx format.
  * Stores it as Graph in *mygraph. 
@@ -76,7 +78,7 @@ Graph* read_graph (Graph *mygraph, char *filename)
   if (fp==NULL) 
   {
     fprintf(stderr,"cannot open file %s\n", filename);
-    return NULL;
+    return -1;
   }
   printf ("Reading graph from %s\n", filename);
   fscanf (fp,"%s", command);
@@ -84,36 +86,36 @@ Graph* read_graph (Graph *mygraph, char *filename)
   {
     fprintf (stderr, "Error in graphics file format\n");
     fclose (fp);
-    return NULL;
+    return -1;
   } 
   else 
   {
     fscanf (fp, "%d", &i);
-    mygraph = initialize_graph (mygraph, i+1); // +1 so nodes can be numbered 1..MAX
+    initialize_graph (mygraph, i+1); // +1 so nodes can be numbered 1..MAX
     while (fscanf (fp, "%s", command)!=EOF) 
     {
       if (strcmp (command, "NODE")==0) 
       {
         fscanf (fp, "%d %s", &i, name);
-        mygraph = insert_graph_node (mygraph, i, name);
+        insert_graph_node (mygraph, i, name);
       } 
       else 
       {
         if (strcmp (command, "EDGE")==0) 
         {
           fscanf (fp, "%d %d", &s, &t);
-          mygraph = insert_graph_link (mygraph, s, t);
+          insert_graph_link (mygraph, s, t);
         } 
         else 
         {
           fclose (fp);
-          return NULL;
+          return -1;
         }
       }
     }
   }
   fclose (fp);
-  return mygraph;
+  return 0;
 }
 void print_graph (Graph *mygraph)
 /* 
