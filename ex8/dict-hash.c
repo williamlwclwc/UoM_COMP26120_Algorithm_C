@@ -164,6 +164,11 @@ Boolean find (Key_Type new_key, Table head)
 	if(head->table_size <= 7) q = 5;
 	index0 = q - index0 % q;
 	index = compress_func(index, head->table_size);
+	// clear static variable before probing
+	if(probing_type == quadratic || probing_type == double_hash)
+	{
+		collision_func(index, clear, index0);
+	}
 	Table_size start_point = index;
 	// if hash result is empty, then not found
 	if(p[index].state == empty)
