@@ -1,13 +1,17 @@
 CC=gcc
-CFLAGS=-Wall -g -std=c99
+CFLAGS=-Wall -g 
 LDFLAGS=-lm
-HEADERS=graph.h
 
-%.o: $(HEADERS)
- 
-part1: part1.o graph_functions.o
+part1: 
+	$(CC) $(CFLAGS) graph_functions.c part1.c -o part1 
 
-part2: part2.o graph_functions.o graph_search.o
+part2_depth: 
+	$(CC) $(CFLAGS) -DDFS $(LDFLAGS) graph_functions.c part2.c -o part2_depth 
+
+part2_breadth: 
+	$(CC) $(CFLAGS) -DBFS $(LDFLAGS) graph_functions.c part2.c -o part2_breadth
 
 clean:
-	rm -f part1 part2 part1.o part2.o graph_functions.o graph_search.o
+	rm -f part1 part2 part1.o part2.o graph_functions.o 
+
+.PHONY: part1 part2_depth part2_breadth
