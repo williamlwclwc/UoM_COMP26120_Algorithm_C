@@ -37,6 +37,7 @@ extern int insert_graph_node (Graph *mygraph, int n, char *name);
 extern int insert_graph_link (Graph *mygraph, int source, int target);
 extern int read_graph (Graph *mygraph, char *filename);
 extern void print_graph (Graph *mygraph);
+extern void free_graph (Graph *mygraph);
 
 /*
  Here is an implementation of a Queue that you may wish to use in

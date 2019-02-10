@@ -1,6 +1,6 @@
 #include "graph.h"
 
-#define MAX_NAME_LEN 20
+#define MAX_NAME_LEN 100
 
 // Important: you do not need to allocate memory for
 // mygraph. Currently this is already allocated on
@@ -15,6 +15,12 @@ int initialize_graph (Graph *mygraph, int MaxSize)
   strcpy(mygraph->name, "Graph 1");
   mygraph->table = (Node*)malloc(sizeof(Node)*MaxSize);
   check(mygraph->table, "nodes");
+  for(int i = 0; i < MaxSize; i++)
+  {
+    mygraph->table[i].name = NULL;
+    mygraph->table[i].outdegree = 0;
+    mygraph->table[i].outlist = NULL;
+  }
   mygraph->num = 0;
   mygraph->MaxSize = MaxSize;
   return 0;
@@ -38,14 +44,25 @@ int insert_graph_node (Graph *mygraph, int n, char *name)
 int insert_graph_link (Graph *mygraph, int source, int target) 
 {
   // your code goes here
-  List* new = (List*)malloc(sizeof(List));
-  check(new, "new_link");
-  new->index = target;
   if(source > mygraph->num)
   {
     printf("Please check 'source'\n");
     return -1;
   }
+  // check duplicate links
+  // List* p = mygraph->table[source].outlist;
+  // while(p != NULL)
+  // {
+  //   if(p->index == target)
+  //   {
+  //     printf("%d %d\n", source, target);
+  //     return -1;
+  //   }
+  //   p = p->next;
+  // }
+  List* new = (List*)malloc(sizeof(List));
+  check(new, "new_link");
+  new->index = target;
   new->next = mygraph->table[source].outlist;
   mygraph->table[source].outlist = new;
   mygraph->table[source].outdegree++;
@@ -117,6 +134,7 @@ int read_graph (Graph *mygraph, char *filename)
   fclose (fp);
   return 0;
 }
+
 void print_graph (Graph *mygraph)
 /* 
  * Prints out Graph *mygraph to the stdout in .gx format - JLS
@@ -136,4 +154,30 @@ void print_graph (Graph *mygraph)
         current= current->next;
       }
     }
+}
+
+void free_graph (Graph *mygraph)
+/* 
+ * Free memory Graph *mygraph
+ */
+{
+  int i;
+  List *current;
+  List *temp;
+  for (i = 0; i < mygraph->MaxSize; i++)
+  {
+    if (mygraph->table[i].name != NULL) 
+    {
+      free(mygraph->table[i].name);
+      current = mygraph->table[i].outlist;
+      while (current != NULL) 
+      {
+        temp = current;
+        current = current->next;
+        free(temp);
+      }
+    }
+  }
+  free(mygraph->name);
+  free(mygraph->table);
 }

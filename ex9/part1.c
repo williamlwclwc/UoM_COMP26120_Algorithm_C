@@ -15,6 +15,7 @@ int main(int argc,char *argv[])
   max_out_degree(&mygraph);
   max_in_degree(&mygraph);
   min_in_degree(&mygraph);
+  free_graph(&mygraph);
 
   return(0);
 }
@@ -66,11 +67,11 @@ void min_in_degree(Graph* mygraph)
     in_degree[i] = 0;
   }
   get_in_degree(mygraph, in_degree);
-  int min = in_degree[1];
+  int min = 99999;
   char* min_node = NULL;
   for(int i = 1; i < mygraph->MaxSize; i++)
   {
-    if(min > in_degree[i])
+    if(min > in_degree[i] && in_degree[i] != 0)
     {
       min = in_degree[i];
       min_node = mygraph->table[i].name;

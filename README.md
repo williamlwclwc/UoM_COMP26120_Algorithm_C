@@ -17,3 +17,5 @@ COMP26120 Algorithms and Imperative Programming Labs
 ## Lab7: Pangolins game based on tree structure
 
 ## Lab8: Spellchecker based on tree and hash-table structures
+
+## Lab9: Graph Representation and Traversal
