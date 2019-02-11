@@ -15,6 +15,7 @@ int initialize_graph (Graph *mygraph, int MaxSize)
   strcpy(mygraph->name, "Graph 1");
   mygraph->table = (Node*)malloc(sizeof(Node)*MaxSize);
   check(mygraph->table, "nodes");
+  // initialize table
   for(int i = 0; i < MaxSize; i++)
   {
     mygraph->table[i].name = NULL;
