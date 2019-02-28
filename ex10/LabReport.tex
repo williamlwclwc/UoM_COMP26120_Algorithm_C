@@ -1,0 +1,59 @@
+\documentclass{article}
+
+\title{COMP26120 Lab 10}
+\author{?}
+
+\begin{document}
+\maketitle
+
+% PART 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The small-world hypothesis}
+\label{sec:small world}
+% Here give your statement of the small-world hypothesis and how you
+% are going to test it.
+I think the small-world hypothesis is true, and I will test for it by checking:
+for each 2 people in the graph, try to find a shortest path whose length is less than 6.
+
+
+\section{Complexity Arguments}
+\label{sec:complexity}
+% Write down the complexity of Dijkstra's algorithm and of Floyd's algorithm.
+% Explain why, for these graphs, Dijkstra's algorithm is more efficient.
+Dijkstra using priority queue has the complexity of O\(|E|+|V|log|V|\),
+where E is the number of edges, and V is the number of vertexes.
+We also need to apply Dijkstra for every pair of vertexes,
+which means that the overall complexity would be O\(|V|*\(|E|+|V|log|V|\)\).
+Floyd has the complexity of O\(|V|^3\), where V is the number of vertexes.
+And we can approximately calculate the scale of time for Caltech.gx and Oklahoma.gx using Dijkstra and Floyd,
+Dijkstra: O\(|V|*\(|E|+|V|log|V|\)\)
+\(1\) Caltech.gx: 769*\(33312+769*log\(769\)\) = 31,530,538
+\(2\) Oklahoma.gx: 17425*\(1785056+17425*log\(17425\)\) = 3,565,906,018
+Floyd:  O\(|V|^3\)
+\(1\) Caltech.gx: 769^3 = 454,756,609
+\(2\) Oklahoma.gx: 17425^3 = 5,290,763,640,625
+We can see from the approxiamation calculated using time complexity, Dijkstra algorithm
+is much less than Floyd algorithm, so Dijkstra algorithm is more efficient.
+
+% PART 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Part 2 results}
+\label{sec:part2}
+% Give the results of part two experiments.
+Caltech: 0.4s, it is not a "small world".
+Oklahoma: 3066.7s, it is not a "small world".
+
+
+% PART 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Part 3 results}
+\label{sec:part3}
+% Give the results of part three experiments.
+
+
+\section{Conclusions}
+\label{sec:conclusions}
+% Give your conclusions from the above experiments 
+
+
+\end{document}

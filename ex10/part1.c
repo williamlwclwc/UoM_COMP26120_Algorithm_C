@@ -15,16 +15,14 @@ typedef struct MinHeap
     ElemType* element;
 } pQueue;
 
-int DijkstraShortestPaths(Graph* G, Node* v);
-int LocateVex(Graph* mygraph, Node* u);
+int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist);
 pQueue* initQueue(int max);
 void insertQueue(int key, Node v, pQueue* pq);
 ElemType removeMin(pQueue* pq);
 void freeQueue(pQueue* pq);
-void buildQueue(int* key, Graph* G, pQueue* pq);
+//void buildQueue(int* key, Graph* G, pQueue* pq);
 int belongsQueue(Node* v, pQueue* pq);
 void minHeapify(pQueue* pq, int i);
-int LocatePQ(Graph* G, pQueue* pq, int index);
 
 int main(int argc,char *argv[])
 {
@@ -40,13 +38,13 @@ int main(int argc,char *argv[])
     /* you take it from here */
     int result = 0;
     int is_small_world = 1;
+    float total_dist = 0;
     for(int i = 1; i < mygraph.MaxSize; i++)
     {
-        result = DijkstraShortestPaths(&mygraph, mygraph.table + i);
+        result = DijkstraShortestPaths(&mygraph, i, &total_dist);
         if (!result)
         {
             is_small_world = 0;
-            //break;
         }
     }
     if (is_small_world)
@@ -57,6 +55,8 @@ int main(int argc,char *argv[])
     {
         printf("%s is not small world.\n", argv[1]);
     }
+    total_dist = total_dist / (mygraph.MaxSize-1);
+    printf("Average distance in total: %.2f\n", total_dist);
     free_graph(&mygraph);
 
     end_t = clock();
@@ -66,55 +66,86 @@ int main(int argc,char *argv[])
     return(0);
 }
 
-int DijkstraShortestPaths(Graph* G, Node* v)
+int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist)
 {
     int D[G->MaxSize];
+    int visited[G->MaxSize];
     Node* node_u;
     ElemType elem_u;
-    int u;
-    int index_v;
+    Node* v = G->table + index_v;
     int temp;
     int pq_index;
     for(int i = 0; i < G->MaxSize; i++)
     {
         D[i] = INT_MAX;
+        visited[i] = 0;
     }
-    index_v = LocateVex(G, v);
     D[index_v] = 0;
     // set priority queue
     pQueue* pq = initQueue(G->MaxSize);
-    buildQueue(D, G, pq);
+    //buildQueue(D, G, pq);
+    insertQueue(D[index_v], G->table[index_v], pq);
     // while queue is not empty
+    List* z;
     while(pq->size != 0)
     {
         // u<-dequeue(Q)
         elem_u = removeMin(pq);
         node_u = &(elem_u.v);
-        u = LocateVex(G, node_u);
         // z adjacent to u
-        List* z;
         for(z = node_u->outlist; z != NULL; z = z->next)
         {
+            // build heap for all vertexes is not optimal
             // if z belongs to Q
-            if(belongsQueue(G->table + z->index, pq))
+//            pq_index = belongsQueue(G->table + z->index, pq);
+//            if(pq_index != -1)
+//            {
+//                if(elem_u.key == INT_MAX)
+//                {
+//                    temp = elem_u.key;
+//                }
+//                else
+//                {
+//                    temp = elem_u.key + 1;
+//                }
+//                if(temp < D[z->index])
+//                {
+//                    D[z->index] = temp;
+//                    pq->element[pq_index].key = D[z->index];
+//                    for(int j = pq->size/2; j > 0; j--)
+//                        minHeapify(pq, j);
+//
+//                }
+//            }
+            if(elem_u.key == INT_MAX)
             {
-                if(D[u] == INT_MAX)
+                temp = elem_u.key;
+            }
+            else
+            {
+                temp = elem_u.key + 1;
+            }
+            if(temp < D[z->index])
+            {
+                D[z->index] = temp;
+                if(visited[z->index])
                 {
-                    temp = D[u];
+                    // update
+                    pq_index = belongsQueue(G->table + z->index, pq);
+                    if(pq_index != -1)
+                    {
+                        pq->element[pq_index].key = D[z->index];
+                        for(int j = pq->size/2; j > 0; j--)
+                            minHeapify(pq, j);
+                    }
                 }
                 else
                 {
-                    temp = D[u] + 1;
+                    // insert
+                    insertQueue(D[z->index], G->table[z->index], pq);
+                    visited[z->index] = 1;
                 }
-                if(temp < D[z->index])
-                {
-                    D[z->index] = temp;
-                    pq_index = LocatePQ(G, pq, z->index);
-                    pq->element[pq_index].key = D[z->index];
-                    for(int j = pq->size/2;j > 0; j--)
-                        minHeapify(pq, j);
 
-                }
             }
         }
     }
@@ -133,12 +164,14 @@ int DijkstraShortestPaths(Graph* G, Node* v)
             is_small_world = 0;
             if(D[i]==INT_MAX)
             {
-//                printf("Node %s cannot reach Node %s\n", G->table[index_v].name, G->table[i].name);
-                  non_reachable++;
+//                if(index_v == 268)
+//                    printf("Node %s cannot reach Node %s\n", G->table[index_v].name, G->table[i].name);
+                non_reachable++;
             }
             else
             {
-//              printf("Distance of Node %s and Node %s is larger than 6(%d)\n", G->table[index_v].name, G->table[i].name, D[i]);
+//                if(index_v == 268)
+//                    printf("Distance of Node %s and Node %s is larger than 6(%d)\n", G->table[index_v].name, G->table[i].name, D[i]);
                 larger_than_six++;
                 avg += D[i];
             }
@@ -147,37 +180,21 @@ int DijkstraShortestPaths(Graph* G, Node* v)
         {
             avg += D[i];
         }
-
-//        if(D[i] != INT_MAX)
-//        {
-//            printf("Node %s to Node %s: %d\n", G->table[index_v].name, G->table[i].name, D[i]);
-//        }
     }
-//    if(is_small_world)
-//    {
-//        printf("Node %s can reach all other node with in 6 steps\n", v->name);
-//    }
-//    else
-//    {
-//        printf("There are %d nodes that Node %s cannot reach\n", non_reachable, v->name);
-//        printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", larger_than_six, v->name);
-//    }
+    if(is_small_world)
+    {
+        printf("Node %s can reach all other node with in 6 steps\n", v->name);
+    }
+    else
+    {
+        printf("There are %d nodes that Node %s cannot reach\n", non_reachable, v->name);
+        if(larger_than_six > 0)
+          printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", larger_than_six, v->name);
+    }
     avg = (float)avg / G->MaxSize;
     printf("Average distance: %f\n", avg);
+    *total_dist += avg;
     return is_small_world;
-}
-
-// return index of node u
-int LocateVex(Graph* mygraph, Node* u)
-{
-    for (int i = 0; i < mygraph->MaxSize; i++)
-    {
-        if (mygraph->table[i].name != NULL && strcmp(mygraph->table[i].name, u->name) == 0)
-        {
-            return i;
-        }
-    }
-    return -1;
 }
 
 // init pq
@@ -322,41 +339,24 @@ void minHeapify(pQueue* pq, int i)
     }
 }
 
-// locate pq element by graph index
-int LocatePQ(Graph* G, pQueue* pq, int index)
-{
-    for(int i = 1; i <= pq->size; i++)
-    {
-//        if(LocateVex(G, &(pq->element[i].v)) == index)
-//        {
-//            return i; // found index
-//        }
-        if(strcmp(G->table[index].name, pq->element[i].v.name) == 0)
-        {
-            return i;
-        }
-    }
-    return -1; // if not found
-}
-
-// build queue
-void buildQueue(int* key, Graph* G, pQueue* pq)
-{
-    // insert to build priority queue
+// not optimal: build queue
+//void buildQueue(int* key, Graph* G, pQueue* pq)
+//{
+//    // insert to build priority queue
+////    for(int i = 1; i < G->MaxSize; i++)
+////    {
+////        insertQueue(key[i], G->table[i], pq);
+////    }
+//    // heapify to build priority queue
 //    for(int i = 1; i < G->MaxSize; i++)
 //    {
-//        insertQueue(key[i], G->table[i], pq);
+//        pq->element[i].key = key[i];
+//        pq->element[i].v = G->table[i];
+//        pq->size++;
 //    }
-    // heapify to build priority queue
-    for(int i = 1; i < G->MaxSize; i++)
-    {
-        pq->element[i].key = key[i];
-        pq->element[i].v = G->table[i];
-        pq->size++;
-    }
-    for(int j = pq->size/2;j > 0; j--)
-        minHeapify(pq, j);
-}
+//    for(int j = pq->size/2;j > 0; j--)
+//        minHeapify(pq, j);
+//}
 
 // belongs to queue
 int belongsQueue(Node* v, pQueue* pq)
@@ -367,8 +367,8 @@ int belongsQueue(Node* v, pQueue* pq)
         if(strcmp(name, pq->element[i].v.name) == 0)
         {
             // found: belongs to queue
-            return 1;
+            return i;
         }
     }
-    return 0;
+    return -1;
 }
