@@ -3,7 +3,7 @@
 
 int notInOutlist(Graph* G, int current, int target);
 int getMaxout(Graph* G, int* visited, int current);
-void findTarget(Graph* G, int current);
+void findDist(Graph* G, int current, int target, int* unreachable, int* larger_than_six);
 
 int main(int argc,char *argv[])
 {
@@ -18,9 +18,29 @@ int main(int argc,char *argv[])
     printf("Graph has been read.\n");
     /* you take it from here */
 
-    for(int source = 1; source < mygraph.MaxSize; source++)
+    int larger_than_six = 0;
+    int unreachable = 0;
+    for(int i = 1; i < mygraph.MaxSize; i++)
     {
-        findTarget(&mygraph, source);
+        larger_than_six = 0;
+        unreachable = 0;
+        for(int j = 1; j < mygraph.MaxSize; j++)
+        {
+            findDist(&mygraph, i, j, &unreachable, &larger_than_six);
+        }
+        if(unreachable > 0)
+        {
+            printf("There are %d nodes that Node %s cannot reach\n", unreachable, mygraph.table[i].name);
+        }
+        else if(larger_than_six > 0)
+        {
+            printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", \
+                   larger_than_six, mygraph.table[i].name);
+        }
+        else
+        {
+            printf("Node %s can reach all other node with in 6 steps\n", mygraph.table[i].name);
+        }
     }
 
     free_graph(&mygraph);
@@ -67,51 +87,23 @@ int getMaxout(Graph* G, int* visited, int current)
     return max_index;
 }
 
-void findTarget(Graph* G, int source)
+void findDist(Graph* G, int current, int target, int* unreachable, int* larger_than_six)
 {
-    int unreachable = G->MaxSize - 1;
-    int larger_than_six = 0;
-    int current = source;
     int visited[G->MaxSize];
-    int reached[G->MaxSize];
     memset(visited, 0, sizeof(int)*G->MaxSize);
-    memset(reached, 0, sizeof(int)*G->MaxSize);
     int maxOut = 0;
-    int dist = -1;
-    float avg_dist = 0;
+    int dist = 0;
     visited[current] = 1;
-    reached[current] = 1;
-    unreachable--;
-    List* z = NULL;
     while(G->table[current].outlist != NULL)
     {
-        z = G->table[current].outlist;
-        while(z != NULL)
+        if(!notInOutlist(G, current, target))
         {
-            if(reached[z->index] == 0)
-            {
-                reached[z->index] = 1;
-                unreachable--;
-                if(dist+1 > 6)
-                {
-                    larger_than_six++;
-                }
-                avg_dist += (dist+1);
-            }
-            z = z->next;
-        }
+            dist++;
+            visited[target] = 1;
+            break;
+        } 
         visited[current] = 1;
         dist++;
-        if(reached[current] == 0)
-        {
-            reached[current] = 1;
-            unreachable--; 
-            if(dist+1 > 6)
-            {
-                larger_than_six++;
-            } 
-            avg_dist += dist; 
-        }
         maxOut = getMaxout(G, visited, current);
         if(maxOut == 0)
         {
@@ -122,19 +114,14 @@ void findTarget(Graph* G, int source)
             current = maxOut;
         }
     }
-    if(unreachable > 0)
+    dist++;
+    // distance = number of nodes in path - 1
+    if(visited[target] == 0)
     {
-        printf("There are %d nodes that Node %s cannot reach\n", unreachable, G->table[source].name);
+        (*unreachable)++;
     }
-    if(larger_than_six > 0)
+    else if(dist > 6)
     {
-        printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", \
-                larger_than_six, G->table[source].name);
+        (*larger_than_six)++;
     }
-    else
-    {
-        printf("Node %s can reach all other node with in 6 steps\n", G->table[source].name);
-    }
-    avg_dist /= G->MaxSize;
-    printf("Average distance for Node %s is %.3f\n", G->table[source].name, avg_dist);
 }
