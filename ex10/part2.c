@@ -42,19 +42,20 @@ float findTarget(Graph* G, int source, float* total_unreachable, float* total_la
 {
     int maxOutdegree = 0;
     int max_index = 0;
-    int unreachable = G->MaxSize - 1;
+    int unreachable = G->MaxSize - 1; // maximum unreachable amount
     int larger_than_six = 0;
     int current = source;
-    int visited[G->MaxSize];
-    int reached[G->MaxSize];
+    int visited[G->MaxSize]; // mark visited nodes
+    int reached[G->MaxSize]; // mark reachable nodes
     memset(visited, 0, sizeof(int)*G->MaxSize);
     memset(reached, 0, sizeof(int)*G->MaxSize);
-    int dist = 0;
+    int dist = 0; // initial distance = 0
     float avg_dist = 0;
+    // visit the starting point
     visited[current] = 1;
     reached[current] = 1;
     unreachable--;
-    List* z = NULL;
+    List* z = NULL; // adjacent list of current
     while(G->table[current].outlist != NULL)
     {
         z = G->table[current].outlist;
@@ -73,12 +74,13 @@ float findTarget(Graph* G, int source, float* total_unreachable, float* total_la
                 }
                 avg_dist += (dist+1);
             }
-            // get max outdegree node's index
             // adjacent node z not visited
             if(visited[z->index] == 0)
             {
+                // mark some reachable nodes to visited to speed up
                 if(G->table[z->index].outdegree < G->MaxSize/50)
                     visited[z->index] = 1;
+                // get max outdegree node's index
                 if(G->table[z->index].outdegree > maxOutdegree)
                 {
                     maxOutdegree = G->table[z->index].outdegree;
@@ -87,6 +89,7 @@ float findTarget(Graph* G, int source, float* total_unreachable, float* total_la
             }
             z = z->next;
         }
+        // 0 means no way to go
         if(max_index == 0)
         {
             break;
@@ -117,15 +120,14 @@ float findTarget(Graph* G, int source, float* total_unreachable, float* total_la
     // }
     // if(larger_than_six > 0)
     // {
-    //     printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", \
-    //             larger_than_six, G->table[source].name);
+    //     printf("There are %d nodes that Node %s have to reach with more than 6 steps\n",larger_than_six, G->table[source].name);
     // }
     // if(unreachable == 0 && larger_than_six == 0)
     // {
     //     printf("Node %s can reach all other node with in 6 steps\n", G->table[source].name);
     // }
-    // printf("Average distance for Node %s is %.3f\n", G->table[source].name, avg_dist);
     avg_dist /= (G->MaxSize-1-unreachable);
+    // printf("Average distance for Node %s is %.3f\n", G->table[source].name, avg_dist);
     *total_unreachable += unreachable;
     *total_larger_than_six += larger_than_six;
     return avg_dist;

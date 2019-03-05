@@ -36,8 +36,9 @@ int main(int argc,char *argv[])
 
     printf("Graph has been read.\n");
     /* you take it from here */
-    int result = 0;
-    int is_small_world = 1;
+
+    int result = 0; // temp result for Dijkstra
+    int is_small_world = 1; // is small world or not
     float total_dist = 0;
     float total_unreachable = 0;
     float total_larger_than_six = 0;
@@ -74,24 +75,25 @@ int main(int argc,char *argv[])
 
 int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total_unreachable, float* total_6)
 {
-    int D[G->MaxSize];
-    int visited[G->MaxSize];
+    int D[G->MaxSize]; // distance array
+    int visited[G->MaxSize]; // 0 not visited, 1 visited
     Node* node_u;
     ElemType elem_u;
     int temp;
-    int pq_index;
+    int pq_index; // priority queue index
+    // initialize distance and visited array
     for(int i = 0; i < G->MaxSize; i++)
     {
         D[i] = INT_MAX;
         visited[i] = 0;
     }
-    D[index_v] = 0;
+    D[index_v] = 0; // set source's distance to 0
     // set priority queue
     pQueue* pq = initQueue(G->MaxSize);
     //buildQueue(D, G, pq);
     insertQueue(D[index_v], G->table[index_v], pq);
     // while queue is not empty
-    List* z;
+    List* z; // adjacent list of u
     while(pq->size != 0)
     {
         // u<-dequeue(Q)
@@ -100,28 +102,30 @@ int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total
         // z adjacent to u
         for(z = node_u->outlist; z != NULL; z = z->next)
         {
+
             // build heap for all vertexes is not optimal
             // if z belongs to Q
-//            pq_index = belongsQueue(G->table + z->index, pq);
-//            if(pq_index != -1)
-//            {
-//                if(elem_u.key == INT_MAX)
-//                {
-//                    temp = elem_u.key;
-//                }
-//                else
-//                {
-//                    temp = elem_u.key + 1;
-//                }
-//                if(temp < D[z->index])
-//                {
-//                    D[z->index] = temp;
-//                    pq->element[pq_index].key = D[z->index];
-//                    for(int j = pq->size/2; j > 0; j--)
-//                        minHeapify(pq, j);
-//
-//                }
-//            }
+        //    pq_index = belongsQueue(G->table + z->index, pq);
+        //    if(pq_index != -1)
+        //    {
+        //        if(elem_u.key == INT_MAX)
+        //        {
+        //            temp = elem_u.key;
+        //        }
+        //        else
+        //        {
+        //            temp = elem_u.key + 1;
+        //        }
+        //        if(temp < D[z->index])
+        //        {
+        //            D[z->index] = temp;
+        //            pq->element[pq_index].key = D[z->index];
+        //            for(int j = pq->size/2; j > 0; j--)
+        //                minHeapify(pq, j);
+        //        }
+        //    }
+            
+            // avoid overflow for INT_MAX+1 
             if(elem_u.key == INT_MAX)
             {
                 temp = elem_u.key;
@@ -130,15 +134,18 @@ int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total
             {
                 temp = elem_u.key + 1;
             }
+            // update distance if new path is shorter
             if(temp < D[z->index])
             {
                 D[z->index] = temp;
                 if(visited[z->index])
                 {
-                    // update
+                    // update key of pq: if this adjacent node z has been visited
+                    // find the index of pq with given index of the graph
                     pq_index = belongsQueue(G->table + z->index, pq);
                     if(pq_index != -1)
                     {
+                        // if found, update key and heapify heap
                         pq->element[pq_index].key = D[z->index];
                         for(int j = pq->size/2; j > 0; j--)
                             minHeapify(pq, j);
@@ -146,7 +153,7 @@ int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total
                 }
                 else
                 {
-                    // insert
+                    // insert into pq: if this adjacent node z has not been visited
                     insertQueue(D[z->index], G->table[z->index], pq);
                     visited[z->index] = 1;
                 }
@@ -194,8 +201,8 @@ int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total
     //     if(larger_than_six > 0)
     //       printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", larger_than_six, v->name);
     // }
-    // printf("Average distance: %f\n", avg);
     avg = (float)avg / (G->MaxSize-1-non_reachable);
+    // printf("Average distance: %f\n", avg);
     *total_dist += avg;
     *total_unreachable += non_reachable;
     *total_6 += larger_than_six;
@@ -236,42 +243,49 @@ void insertQueue(int key, Node v, pQueue* pq)
         printf("priority queue is full\n");
         return;
     }
+    // insert data
     pq->size++;
     pq->element[pq->size].key = key;
     pq->element[pq->size].v = v;
     int i = pq->size;
     ElemType temp;
+    // up heap
+    // if parent > new then swap(until reach the top)
     while(i > 1 && pq->element[i/2].key > pq->element[i].key)
     {
         // swap elem[i/2], elem[i]
         temp = pq->element[i/2];
         pq->element[i/2] = pq->element[i];
         pq->element[i] = temp;
-        i = i/2;
+        i = i/2; // update new node's index
     }
 }
 
 // remove minimum of queue
 ElemType removeMin(pQueue* pq)
 {
-    ElemType min = pq->element[1];
-    pq->element[1] = pq->element[pq->size];
+    ElemType min = pq->element[1]; // minimum is at top
+    pq->element[1] = pq->element[pq->size]; // switch the last element to top
     pq->size--;
     int i = 1;
     int j = 0;
     ElemType temp;
+    // last element: down heap until the last(pq->size)
     while(i < pq->size)
     {
+        // right child: 2*i+1
         if(2*i+1 <= pq->size)
         {
             // this node has 2 internal children
             if(pq->element[i].key <= pq->element[2*i].key && \
             pq->element[i].key <= pq->element[2*i+1].key)
             {
+                // already smaller than children
                 return min;
             }
             else
             {
+                // select the smaller index of left and right child
                 if(pq->element[2*i].key >= pq->element[2*i+1].key)
                 {
                     j = 2*i+1;
@@ -280,18 +294,21 @@ ElemType removeMin(pQueue* pq)
                 {
                     j = 2*i;
                 }
+                // down heap to the smaller one
                 // swap elem[i], elem[j]
                 temp = pq->element[i];
                 pq->element[i] = pq->element[j];
                 pq->element[j] = temp;
-                i = j;
+                i = j; // update top element's index
             }
         }
         else
         {
-            // this node has 0 or 1 internal child
+            // 2*i: left child
+            // this node has 0 or 1 internal child(left and the last)
             if(2*i <= pq->size)
             {
+                // has left child, if child is smaller, then swap
                 if(pq->element[i].key > pq->element[2*i].key)
                 {
                     // swap elem[i], elem[2i]
@@ -318,10 +335,12 @@ void freeQueue(pQueue* pq)
 
 void minHeapify(pQueue* pq, int i)
 {
-    int l = 2*i;
-    int r = 2*i + 1;
+    // i is the index we want to heapify
+    int l = 2*i; // left index
+    int r = 2*i + 1; // right index
     int min;
     ElemType temp;
+    // has left child and left child is smaller
     if(l <= pq->size && pq->element[l].key < pq->element[i].key)
     {
         min = l;
@@ -330,10 +349,12 @@ void minHeapify(pQueue* pq, int i)
     {
         min = i;
     }
+    // has right child and right child is smaller
     if(r <= pq->size && pq->element[r].key < pq->element[min].key)
     {
         min = r;
     }
+    // if one of the children is smaller
     if(min != i)
     {
         // swap elem[i], elem[min]

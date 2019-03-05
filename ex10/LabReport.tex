@@ -12,9 +12,13 @@
 \label{sec:small world}
 % Here give your statement of the small-world hypothesis and how you
 % are going to test it.
+Statement and how to test it:
+
 I think the small-world hypothesis is false, and I will test for it by checking:
 
-for each 2 people in the graph, try to find a shortest path whose length is less than 6.
+For each 2 people in the graph, try to find a shortest path whose length is less than (or equal to) 6. 
+If each pair of people has a path that is not longer than 6, then the graph is a "small world", otherwise,
+the graph is not a "small world".
 
 
 \section{Complexity Arguments}
@@ -48,10 +52,15 @@ We can see from the approxiamation calculated using time complexity, Dijkstra al
 is much less than Floyd algorithm, so Dijkstra algorithm is more efficient.
 
 % PART 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \section{Part 2 results}
 \label{sec:part2}
 % Give the results of part two experiments.
+Part2 experiment:
+
+Part2 implemented Dijkstra algorithm using priority queue. Using priority queue, we can easily remove the node 
+with the minimum distance from the priority queue, when we remove a node from priority queue, it means that 
+we add the node into the Dijkstra cloud and we have already calculated the shortest path to this node.
+
 Statistics of Caltech.gx and Oklahoma.gx:
 
   Caltech: Time: 0.43s,
@@ -82,12 +91,16 @@ Statistics of Caltech.gx and Oklahoma.gx:
   than Caltech.gx, which is considered to be agreed with the time complexity if we consider some small issues like 
   different execution environment(server cpu), constant factor, initialize arrays to zeros, etc.
 
-
 % PART 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Part 3 results}
 \label{sec:part3}
-% Give the results of part three experiments.
+% Give the results of part three experiments.'
+Part3 experiment:
+
+Using heuristic algorithm(find the node with the largest outdegree as the next step) to save some time on 
+graphs with large scale, and compare the statistics with Dijkstra algorithm.
+
 Statistics of Caltech.gx and Oklahoma.gx:
 
   Caltech: 
@@ -121,9 +134,17 @@ Conclusions of experiments of part2 and part3:
 
 Part2:
 
-Both Caltech.gx and Oklahoma.gx are not "small world", the graphs have some "isolated" people that
+Both Caltech.gx and Oklahoma.gx are not strictly "small world", the graphs have some "isolated" people that
 cannot be reached. Apart from that, there are not much distance more than six shortest paths in these
 two graphs. So in my opinion, these two graphs are close to "small world" but they are not.
+
+How close to "small world" according Dijkstra (matching rate: "100\%" regarded as strictly matching "small world"):
+
+Formula: $(numberOfAllNodes - (unreachableLargerThanSix)) / numberOfAllNodes$
+
+Caltech.gx: $(769-(13.91+0)) / 769 = 98.2\%$
+
+Oklahoma.gx: $(17425-(10+0.19)) / 17425 = 99.9\%$
 
 Part3:
 
@@ -137,10 +158,12 @@ To what extent it works:
 
 We can evaluate the algorithm compared with Dijkstra (miscalculated rate: "0" regarded as perfect):
 
+Formula: $((heuristicUnreachable+heuristicLargerThanSix)) / numberOfAllNodes$
+
 Caltech: $((36.81+208.93)-(13.91+0)) / 769 = 30.1\%$
 
 Oklahoma: $((3164.17+8766.88)-(10+0.19)) / 17425 = 68.4\%$
 
-So we can see that the algorithm become worse when the scale of graph becomes larger.
+So we can see that the algorithm becomes worse when the scale of graph becomes larger.
 
 \end{document}

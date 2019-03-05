@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1551750906 "/home/william/Desktop/COMP 26120/ex10/LabReport.tex" "/home/william/Desktop/COMP 26120/ex10/LabReport.pdf" "LabReport" 1551750906
-  "/home/william/Desktop/COMP 26120/ex10/LabReport.aux" 1551750906 565 3775593de9b8bef3a1955924281a795c ""
-  "/home/william/Desktop/COMP 26120/ex10/LabReport.tex" 1551750906 4967 7d8c1c1c1b70cd05b410f7eac3015b06 ""
+["pdflatex"] 1551823821 "/home/william/Desktop/COMP 26120/ex10/LabReport.tex" "/home/william/Desktop/COMP 26120/ex10/LabReport.pdf" "LabReport" 1551823821
+  "/home/william/Desktop/COMP 26120/ex10/LabReport.aux" 1551823821 565 8bc552eb5f36c1fb4099039ffe6edc08 ""
+  "/home/william/Desktop/COMP 26120/ex10/LabReport.tex" 1551823821 6083 f88644efdfb9f8f27bab3f093df2c932 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1480098701 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1480098701 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -28,11 +28,11 @@
   "/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1538150599 2974023 3e8976623125cbb3312844d9b874c594 ""
   "/usr/local/texlive/2018/texmf-var/web2c/pdftex/pdflatex.fmt" 1538150633 4222486 5a840890f26857eee66e2c8e7381e342 ""
   "/usr/local/texlive/2018/texmf.cnf" 1538150596 455 5b996dcaa0eb4ef14a83b026bc0a008c ""
-  "LabReport.aux" 1551750906 565 3775593de9b8bef3a1955924281a795c ""
-  "LabReport.tex" 1551750906 4967 7d8c1c1c1b70cd05b410f7eac3015b06 ""
+  "LabReport.aux" 1551823821 565 8bc552eb5f36c1fb4099039ffe6edc08 ""
+  "LabReport.tex" 1551823821 6083 f88644efdfb9f8f27bab3f093df2c932 ""
   (generated)
   "/home/william/Desktop/COMP 26120/ex10/LabReport.pdf"
-  "/home/william/Desktop/COMP 26120/ex10/LabReport.log"
+  "LabReport.pdf"
   "LabReport.log"
   "LabReport.aux"
-  "LabReport.pdf"
+  "/home/william/Desktop/COMP 26120/ex10/LabReport.log"
