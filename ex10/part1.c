@@ -15,7 +15,7 @@ typedef struct MinHeap
     ElemType* element;
 } pQueue;
 
-int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist);
+int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total_unreachable, float* total_6);
 pQueue* initQueue(int max);
 void insertQueue(int key, Node v, pQueue* pq);
 ElemType removeMin(pQueue* pq);
@@ -39,9 +39,11 @@ int main(int argc,char *argv[])
     int result = 0;
     int is_small_world = 1;
     float total_dist = 0;
+    float total_unreachable = 0;
+    float total_larger_than_six = 0;
     for(int i = 1; i < mygraph.MaxSize; i++)
     {
-        result = DijkstraShortestPaths(&mygraph, i, &total_dist);
+        result = DijkstraShortestPaths(&mygraph, i, &total_dist, &total_unreachable, &total_larger_than_six);
         if (!result)
         {
             is_small_world = 0;
@@ -56,7 +58,11 @@ int main(int argc,char *argv[])
         printf("%s is not small world.\n", argv[1]);
     }
     total_dist = total_dist / (mygraph.MaxSize-1);
+    total_unreachable = total_unreachable / (mygraph.MaxSize-1);
+    total_larger_than_six = total_larger_than_six / (mygraph.MaxSize-1);
     printf("Average distance in total: %.2f\n", total_dist);
+    printf("Average unreachable in total: %.2f\n", total_unreachable);
+    printf("Average distance larger than six nodes in total: %.2f\n", total_larger_than_six);
     free_graph(&mygraph);
 
     end_t = clock();
@@ -66,13 +72,12 @@ int main(int argc,char *argv[])
     return(0);
 }
 
-int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist)
+int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist, float* total_unreachable, float* total_6)
 {
     int D[G->MaxSize];
     int visited[G->MaxSize];
     Node* node_u;
     ElemType elem_u;
-    Node* v = G->table + index_v;
     int temp;
     int pq_index;
     for(int i = 0; i < G->MaxSize; i++)
@@ -164,14 +169,10 @@ int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist)
             is_small_world = 0;
             if(D[i]==INT_MAX)
             {
-//                if(index_v == 268)
-//                    printf("Node %s cannot reach Node %s\n", G->table[index_v].name, G->table[i].name);
                 non_reachable++;
             }
             else
             {
-//                if(index_v == 268)
-//                    printf("Distance of Node %s and Node %s is larger than 6(%d)\n", G->table[index_v].name, G->table[i].name, D[i]);
                 larger_than_six++;
                 avg += D[i];
             }
@@ -181,19 +182,23 @@ int DijkstraShortestPaths(Graph* G, int index_v, float* total_dist)
             avg += D[i];
         }
     }
-    if(is_small_world)
-    {
-        printf("Node %s can reach all other node with in 6 steps\n", v->name);
-    }
-    else
-    {
-        printf("There are %d nodes that Node %s cannot reach\n", non_reachable, v->name);
-        if(larger_than_six > 0)
-          printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", larger_than_six, v->name);
-    }
-    avg = (float)avg / G->MaxSize;
-    printf("Average distance: %f\n", avg);
+    // Node* v = G->table + index_v;
+    // if(is_small_world)
+    // {
+    //     printf("Node %s can reach all other node with in 6 steps\n", v->name);
+    // }
+    // else
+    // {
+    //     if(non_reachable > 0)
+    //       printf("There are %d nodes that Node %s cannot reach\n", non_reachable, v->name);
+    //     if(larger_than_six > 0)
+    //       printf("There are %d nodes that Node %s have to reach with more than 6 steps\n", larger_than_six, v->name);
+    // }
+    // printf("Average distance: %f\n", avg);
+    avg = (float)avg / (G->MaxSize-1-non_reachable);
     *total_dist += avg;
+    *total_unreachable += non_reachable;
+    *total_6 += larger_than_six;
     return is_small_world;
 }
 
