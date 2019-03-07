@@ -1,3 +1,5 @@
+# generate demo.gx required in part2
+
 max_num = 120
 with open("demo.gx", "w") as f:
     f.write("MAX"+" "+str(max_num)+"\n")
