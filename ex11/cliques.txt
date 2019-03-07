@@ -1,0 +1,31 @@
+1. What is a clique?
+  
+   A clique is a subset of vertices of an undirected graph such that every two distinct vertices 
+in the clique are adjacent, which means that in a clique, all vertices have different colours.
+
+2. How knowing that there is a clique of size m could help with 
+   the task of finding the smallest k such that a graph is k-colourable?
+
+   If there is a clique of size m, which means that within the clique, every two distinct vertices have to have 
+different colours, so all vertices in the clique have to have different colours, which means that,
+we will need at least m colour, in other words, k >= m.
+
+3. What is the maximum clique problem?
+   
+   A maximum clique of a graph, G, is a clique, such that there is no clique with more vertices. 
+Moreover, the clique number w(G) of a graph G is the number of vertices in a maximum clique in G.
+   The maximum clique problem is to find a maximum clique in a given graph.
+
+4. What is its complexity? 
+
+   It is NP-complete. Algorithms for this problem usually run in exponential time (O(2^n)). 
+
+5. How is this problem related to the problem of graph colourability?
+   
+   The maximum clique problem is the lower bound of the graph colourability problem.
+   In Q2, we know that if there is a clique of size m, then the graph is k-colourable,
+and k >= m. So assume we have size m1, m2, m3,..., mn cliques, and m = max(m1, m2, ..., mn),
+then we have k >= m1, k >= m2, ..., k >= mn, and since m is the largest, finally, we have 
+k >= m, where m is the size of the maximum clique.
+   
+
