@@ -19,3 +19,7 @@ COMP26120 Algorithms and Imperative Programming Labs
 ## Lab8: Spellchecker based on tree and hash-table structures
 
 ## Lab9: Graph Representation and Traversal
+
+## Lab10: Testing the small world hypothesis
+
+## Lab11: Exploring NP-Completeness with Graph colouring
