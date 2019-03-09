@@ -93,7 +93,7 @@ int read_graph (Graph *mygraph, char *filename)
   if (fp==NULL) 
   {
     fprintf(stderr,"cannot open file %s\n", filename);
-    return -1;
+    exit(-1);
   }
   printf ("Reading graph from %s\n", filename);
   fscanf (fp,"%s", command);

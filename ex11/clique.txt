@@ -18,7 +18,7 @@ Moreover, the clique number w(G) of a graph G is the number of vertices in a max
 
 4. What is its complexity? 
 
-   It is NP-complete. Algorithms for this problem usually run in exponential time (O(2^n)). 
+   It is NP-complete. Algorithms for this problem usually run in exponential time (BronKerbosch O(3^(n/3))). 
 
 5. How is this problem related to the problem of graph colourability?
    

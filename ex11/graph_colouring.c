@@ -16,6 +16,8 @@
 #define LOG(...) 
 #endif
 
+#define MAX_COLOURS 1000
+
 // Some Global variables for this file
 // Not brilliant coding style, but avoids lots of extra parameters
 Graph* graph;
@@ -27,8 +29,8 @@ minisat_solver* solver;
 minisat_Var getVar(int index, int colour)
 {
   //TODO this is where you implement your bijection between (index,colour) and vars
-  int var = 0;
-  var = (index + 1) * (colour+1);
+  minisat_Var var = 0;
+  var = index * MAX_COLOURS + colour;
   return var;
 }
 
@@ -47,14 +49,14 @@ void ensureVars()
 // in vars is true. This is logical or, not exclusive or.
 void atLeastOneOfThese(minisat_Var* vars, int len)
 {
- minisat_addClause_begin(solver);
- for(int i=0;i<len;i++){
-   minisat_Lit l = minisat_mkLit_args(vars[i],1);
-   minisat_addClause_addLit(solver,l);
-   if(i==0){LOG("%d",vars[i]);}else{LOG("| %d",vars[i]);}
- }
- LOG("\n");
- minisat_addClause_commit(solver);
+  minisat_addClause_begin(solver);
+  for(int i=0;i<len;i++){
+    minisat_Lit l = minisat_mkLit_args(vars[i],1);
+    minisat_addClause_addLit(solver,l);
+    if(i==0){LOG("%d",vars[i]);}else{LOG("| %d",vars[i]);}
+  }
+  LOG("\n");
+  minisat_addClause_commit(solver);
 }
 
 // Adds the constraint that both variables cannot be true
@@ -197,12 +199,12 @@ int main(int argc,char *argv[])
     // If the constraints are solved then we can read off the colours
     printf("The graph is %d-colourable!\n",colours);
     int* colouring = malloc(sizeof(int)*graph->MaxSize);
-    for(int n=1;n<graph->MaxSize;n++){
+    for(int n=0;n<graph->MaxSize;n++){
       for(int c=0;c<colours;c++){
         if(minisat_modelValue_Lit(solver,minisat_mkLit_args(getVar(n,c),1))){
-          printf("Node %s is colour %d\n",graph->table[n].name,c);
-	  colouring[n]=c;
-	}
+          printf("Node %d is colour %d\n", n , c);
+    colouring[n]=c;
+  }
       }
     }
 
@@ -221,15 +223,19 @@ int main(int argc,char *argv[])
     // Print out the running times of solving and checking
     #define BILLION 1000000000L
     double solvingTime = ( solvingEnd.tv_sec - solvingStart.tv_sec ) + 
-                         (( solvingEnd.tv_nsec - solvingStart.tv_nsec )/ BILLION);
+                          (( solvingEnd.tv_nsec - solvingStart.tv_nsec )/ BILLION);
     double checkingTime = ( checkingEnd.tv_sec - checkingStart.tv_sec ) +
-                         (( checkingEnd.tv_nsec - checkingStart.tv_nsec )/ BILLION);
+                          (( checkingEnd.tv_nsec - checkingStart.tv_nsec )/ BILLION);
     printf( "solvingTime: %lf\n", solvingTime);
     printf( "checkingTime: %lf\n", checkingTime);
+    free(colouring);
   }
   else{
     printf("The graph is not %d-colourable!\n",colours);
   }
+
+  free_graph(graph);
+  free(graph);
 
   return(0);
 }
