@@ -175,7 +175,7 @@ int main(int argc,char *argv[])
   ensureVars();
 
   //Create constraints for each node and edge
-  for(int n=0; n < graph->MaxSize; n++){
+  for(int n=1; n < graph->MaxSize; n++){
     LOG("Add colouring constraints for %d\n",n);
     addColouringConstraint(n);
     List *outlist = graph->table[n].outlist;
@@ -199,7 +199,7 @@ int main(int argc,char *argv[])
     // If the constraints are solved then we can read off the colours
     printf("The graph is %d-colourable!\n",colours);
     int* colouring = malloc(sizeof(int)*graph->MaxSize);
-    for(int n=0;n<graph->MaxSize;n++){
+    for(int n=1;n<graph->MaxSize;n++){
       for(int c=0;c<colours;c++){
         if(minisat_modelValue_Lit(solver,minisat_mkLit_args(getVar(n,c),1))){
           printf("Node %d is colour %d\n", n , c);
