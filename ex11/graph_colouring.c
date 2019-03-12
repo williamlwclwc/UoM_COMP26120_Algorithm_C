@@ -221,7 +221,7 @@ int main(int argc,char *argv[])
     clock_gettime(CLOCK_REALTIME, &checkingEnd);
 
     // Print out the running times of solving and checking
-    #define BILLION 1000000000L
+    #define BILLION 1000000000.0L
     double solvingTime = ( solvingEnd.tv_sec - solvingStart.tv_sec ) + 
                           (( solvingEnd.tv_nsec - solvingStart.tv_nsec )/ BILLION);
     double checkingTime = ( checkingEnd.tv_sec - checkingStart.tv_sec ) +
