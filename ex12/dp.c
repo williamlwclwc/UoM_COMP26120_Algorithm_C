@@ -20,7 +20,7 @@ int QUIET=0; // this can be set to 1 to suppress output
 
 // function prototypes
 extern void read_knapsack_instance(char *filename);
-int DP(int *v,int *wv, int n, int W, int *solution);
+void DP(int *v,int *wv, int n, int W, int *solution);
 extern int check_evaluate_and_print_sol(int *sol,  int *total_value, int *total_weight);
 
 int main(int argc, char *argv[1])
@@ -30,18 +30,20 @@ int main(int argc, char *argv[1])
   
   read_knapsack_instance(argv[1]);
 
-  if((solution = (int *)malloc((Nitems+1)*sizeof(int)))==NULL)
-    {      
-      fprintf(stderr,"Problem allocating table for DP\n");
-      exit(1);
-    }
+  solution = (int *)malloc((Nitems+1)*sizeof(int));
+  if(solution == NULL)
+  {      
+    fprintf(stderr,"Problem allocating table for DP\n");
+    exit(1);
+  }
 
   DP(item_values,item_weights,Nitems,Capacity,solution);
   check_evaluate_and_print_sol(solution,&total_weight,&total_value);
+  free(solution);
   return(0);
 }
   
-int DP(int *v,int *wv, int n, int W, int *solution)
+void DP(int *v,int *wv, int n, int W, int *solution)
 {
   // the dynamic programming function for the knapsack problem
   // the code was adapted from p17 of http://www.es.ele.tue.nl/education/5MC10/solutions/knapsack.pdf
@@ -59,20 +61,86 @@ int DP(int *v,int *wv, int n, int W, int *solution)
 
   // Dynamically allocate memory for variables V and keep
   /* ADD CODE HERE */
- 
- //  set the values of the zeroth row of the partial solutions table to zero
+  // partial solution table
+  V = (int**)malloc(sizeof(int*)*(n+1));
+  if(V == NULL)
+  {
+    fprintf(stderr,"Problem allocating memory for V\n");
+    exit(1);
+  }
+  for(i = 0; i < n+1; i++)
+  {
+    V[i] = (int*)malloc(sizeof(int)*(W+1));
+    if(V[i] == NULL)
+    {
+      fprintf(stderr,"Problem allocating memory for V\n");
+      exit(1);
+    }
+  }
+  // auxiliary boolean array
+  keep = (int**)malloc(sizeof(int*)*(n+1));
+  if(keep == NULL)
+  {
+    fprintf(stderr,"Problem allocating memory for keep\n");
+    exit(1);
+  }
+  for(i = 0; i < n+1; i++)
+  {
+    keep[i] = (int*)malloc(sizeof(int)*(W+1));
+    if(keep[i] == NULL)
+    {
+      fprintf(stderr,"Problem allocating table for keep\n");
+      exit(1);
+    }
+  }
+  // set the values of the zeroth row of the partial solutions table to zero
   /* ADD CODE HERE */
-
-
- // main dynamic programming loops , adding one item at a time and looping through weights from 0 to W
+  for(w = 0; w <= W; w++)
+  {
+    V[0][w] = 0;
+  }
+  // main dynamic programming loops , adding one item at a time and looping through weights from 0 to W
   /* ADD CODE HERE */
-
+  for(i = 1; i <= n; i++)
+  {
+    for(w = 0; w <= W; w++)
+    {
+      // V[i][W] = max(v[i]+V[i-1][w-wv[i]], V[i-1][w])
+      if(wv[i] <= w && v[i]+V[i-1][w-wv[i]] > V[i-1][w])
+      {
+        // take the ith item: ith item's value + without ith item and its weight
+        V[i][w] = v[i] + V[i-1][w-wv[i]];
+        keep[i][w] = 1;
+      }
+      else
+      {
+        // discard
+        V[i][w] = V[i-1][w];
+        keep[i][w] = 0;
+      }
+    }
+  }
 
   // now discover which items were in the optimal solution
   /* ADD CODE HERE */
-
-
-  return V[n][W];
+  K = W;
+  for(i = n; i >= 1; i--)
+  {
+    if(keep[i][K] == 1)
+    {
+      // printf("%d ", i);
+      solution[i] = 1;
+      K = K - wv[i];
+    }
+  }
+  // free V, keep
+  for(i = 0; i < n+1; i++)
+  {
+    free(V[i]);
+    free(keep[i]);
+  }
+  free(V);
+  free(keep);
 }
 
 

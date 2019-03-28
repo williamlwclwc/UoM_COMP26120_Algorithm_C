@@ -137,21 +137,22 @@ void frac_bound(struc_sol *sol, int fix)
   int i; // index of current item
   double totalp=0; // profit total                                              
   int totalw=0; // weight total                                                 
-  sol->val=-1;
+  sol->val=-1; // initial solution value is -1
+  sol->fixed = fix;
 
   // compute the current value and weight of the fixed part                     
   for(i=1;i<=fix;i++)
+  {
+    if(sol->solution_vec[i]==1)
     {
-      if(sol->solution_vec[i]==1)
-        {
-          totalw+=item_weights[temp_indexes[i]];
-          totalp+=item_values[temp_indexes[i]];
-        }
+      totalw+=item_weights[temp_indexes[i]];
+      totalp+=item_values[temp_indexes[i]];
     }
+  }
   if(totalw>Capacity) // if fixed part infeasible, return
-    {                       
-      return;
-    }
+  {                       
+    return;
+  }
 
   sol->val=totalp;
   //  printf("%g %d\n", totalp, totalw);                                        
@@ -159,20 +160,22 @@ void frac_bound(struc_sol *sol, int fix)
   // add in items the rest of the items until capacity is exceeded              
   i=fix+1;
   do
-    {
+  {
     //ADD CODE HERE to update totalw and totalp
-      i++;
-    } while((i<=Nitems)&&(totalw<Capacity));
+    totalp += item_values[temp_indexes[i]];
+    totalw += item_weights[temp_indexes[i]];
+    i++;
+  } while((i<=Nitems)&&(totalw<Capacity));
 
   /* if over-run the capacity, adjust profit total by subtracting 
      that overrun fraction of the last item  */                                                     
   if(totalw>Capacity)
-    {
-      --i;
-      totalp-=((double)(totalw-Capacity)/(double)(item_weights[temp_indexes[i]]\
-						  ))*item_values[temp_indexes[i]];
-    }
- sol->bound=totalp;
+  {
+    --i;
+    totalp-=((double)(totalw-Capacity)/(double)(item_weights[temp_indexes[i]]\
+          ))*item_values[temp_indexes[i]];
+  }
+  sol->bound=totalp;
 }
 
 
@@ -184,24 +187,26 @@ int main(int argc, char *argv[1])
   read_knapsack_instance(argv[1]);
 
   assert(NITEMS>=Nitems);
- 
+
   if((final_sol = (int *)malloc((Nitems+1)*sizeof(int)))==NULL)
-    {      
-      fprintf(stderr,"Problem allocating solution vector final_sol\n");
-      exit(1);
-    }
+  {      
+    fprintf(stderr,"Problem allocating solution vector final_sol\n");
+    exit(1);
+  }
 
   sort_by_ratio();
 
   if((pqueue = (struc_sol *)malloc(sizeof(struc_sol)*SIZE))==NULL)
-    {      
-      fprintf(stderr,"Problem allocating memory for priority queue. Reduce SIZE.\n");
-      exit(1);
-    }
+  {      
+    fprintf(stderr,"Problem allocating memory for priority queue. Reduce SIZE.\n");
+    exit(1);
+  }
 
   branch_and_bound(final_sol);
   printf("Branch and Bound Solution of Knapsack is:\n");
   check_evaluate_and_print_sol(final_sol,&total_value,&total_weight);
+  free(final_sol);
+  free(pqueue);
   return(0);
 }
 
@@ -225,12 +230,79 @@ void branch_and_bound(int *final_sol)
   //       if value > current_best, set current_best to it, and copy child to final_sol
   //       add child to the queue
   // RETURN
-  
 
   /* YOUR CODE GOES HERE */
-
+  float current_best = 0;
+  struc_sol temp;
+  // empty solution
+  struc_sol sol;
+  // compute value and bound
+  frac_bound(&sol, 0);
+  // assign current_best with its value
+  current_best = sol.val;
+  // store it in the pqueue
+  insert(sol);
+  temp = sol;
+  while(QueueSize != 0 && temp.bound > current_best)
+  {
+    temp = removeMax();
+    // if solution is complete
+    if(temp.fixed == Nitems)
+    {
+      for(int i = 1; i <= Nitems; i++)
+      {
+        final_sol[i] = temp.solution_vec[i];
+      }
+      return;
+    }
+    // printf("QueueSize-1: %d\n", QueueSize);
+    struc_sol child1, child2;
+    for(int i = 1; i <= Nitems; i++)
+    {
+      child1.solution_vec[i] = 0;
+      child2.solution_vec[i] = 0;
+    }
+    for(int i = 1; i <= temp.fixed; i++)
+    {
+      child1.solution_vec[i] = temp.solution_vec[i];
+      child2.solution_vec[i] = temp.solution_vec[i];
+    }
+    child1.solution_vec[temp.fixed+1] = 1;
+    child2.solution_vec[temp.fixed+1] = 0;
+    frac_bound(&child1, temp.fixed+1);
+    frac_bound(&child2, temp.fixed+1);
+    if(child1.val != -1)
+    {
+      if(child1.val > current_best)
+      {
+        current_best = child1.val;
+        for(int i = 1; i <= Nitems; i++)
+        {
+          final_sol[i] = 0;
+          final_sol[i] = child1.solution_vec[i];
+        }
+      }
+      insert(child1);
+      // printf("QueueSize+1: %d\n", QueueSize);
+    }
+    if(child2.val != -1)
+    {
+      if(child2.val > current_best)
+      {
+        current_best = child2.val;
+        for(int i = 1; i <= Nitems; i++)
+        {
+          final_sol[i] = 0;
+          final_sol[i] = child2.solution_vec[i];
+        }
+      }
+      insert(child2);
+      // printf("QueueSize+1: %d\n", QueueSize);
+    }
+  }
+  return;
 }
-  
+
 
 void copy_array(int *from, int *to)
 {
@@ -240,7 +312,7 @@ void copy_array(int *from, int *to)
   
   int i;
   for(i=0;i<Nitems;i++)
-    {
-      to[i]=from[i];
-    }
+  {
+    to[i]=from[i];
+  }
 }

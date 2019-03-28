@@ -1,0 +1,15 @@
+1. Why a greedy approach is not necessarily optimal for 0/1 knapsack problem?
+   Because in a greedy approach, we just take the item that has the most value/weight
+ratio until it reaches the limit of the capacity, however, taking the item with most 
+value/weight ratio is not necessarily always the optimal choice of the current situation, 
+which violates the "Subproblem Optimality" property, for example:
+if we have 10 capacity, and we have 3 items: 
+(1) value: 7, weight 7; (2) value: 5, weight 6; (3) value: 3, weight 4,
+in the greedy approach, we will choose item (1) because it has the highest ratio,
+and then we find out that we only have 3 capacity left, so we stop with final value 7,
+but actually, we can choose both (2) and (3) with the final value 8, which is better.
+
+2. Is it optimal for the fractional case?
+Yes, because in the fractional case, the item we select with the most ratio is always 
+the optimal choice, which means that the optimal solution to global problem is the 
+composition of the optimal subproblem solutions in this case.
