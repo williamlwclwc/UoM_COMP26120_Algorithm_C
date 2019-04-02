@@ -249,11 +249,7 @@ void branch_and_bound(int *final_sol)
     // if solution is complete
     if(temp.fixed == Nitems)
     {
-      for(int i = 1; i <= Nitems; i++)
-      {
-        final_sol[i] = temp.solution_vec[i];
-      }
-      return;
+      continue;
     }
     // printf("QueueSize-1: %d\n", QueueSize);
     struc_sol child1, child2;

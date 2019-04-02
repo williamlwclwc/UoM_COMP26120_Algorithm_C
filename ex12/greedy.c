@@ -43,7 +43,7 @@ void greedy()
   {
     solution[i] = 0;
   }
-  while(temp_weight <= Capacity)
+  while(total_weight <= Capacity && i <= Nitems)
   {
     // add the most profit ratio item
     temp_weight = total_weight + item_weights[temp_indexes[i]];
@@ -52,8 +52,8 @@ void greedy()
       total_weight = temp_weight;
       total_value += item_values[temp_indexes[i]];
       solution[i] = 1;
-      i++;
     }
+    i++;
   }
   /* THE CODE SHOULD: take the items in descending 
     profit-to-weight ratio order (by using temp_indexes) and, 

@@ -7,12 +7,16 @@ those items whose total weight should be smaller than the given weight.
 
 2. Subproblem Optimality
 The final solution is the compostion of the optimal subproblems' solution, because,
-for each subproblem, we have considered all the possibilities(i.e take the item or discard), 
+for each subproblem(given weight w, the maximum you can get V[i][W], by take item i, or discard), 
+we have considered all the possibilities(i.e take the item or discard), 
 and we choose the option that have the maximum(optimal) value.
 
 3. Subproblem Overlap
 Optimal solutions to unrelated subproblems can contain subproblems in common.
 In our case, the partial solution table is the "memorization", when we consider whether 
-take the item or discard, we reference the previous filling part of the table, because 
-those are already be the optimal outcomes, all we need to do is add the current item's 
-weight and value if we want to pick the item.
+take the item or discard, we reference the previous filling part of the table, e.g. 
+if we take ith item, we will reference V[i-1][W-wv[i]] that is the best value we get if 
+we reduce the ith item's weight as given weight, and then add it with ith item's value, or just 
+discard, take the previous outcome, V[i-1][W], and we always choose the maximum of those two.
+Because those are already be the optimal outcomes(at previous given weight), 
+all we need to do is add the current item's weight and value if we want to pick the item.

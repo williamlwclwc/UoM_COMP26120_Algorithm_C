@@ -42,8 +42,9 @@ void enumerate()
   int solution[Nitems+1];   // (binary) solution vector representing items packed
   int best_solution[Nitems+1];  // (binary) solution vector for best solution found
   int best_value; // total value packed in the best solution
+  int best_weight;
   double j=0;
-  float cnt = 0;
+  float cnt = 1;
   int condition = pow(2, Nitems) / 100 ;
   int total_value, total_weight; // total value and total weight of current knapsack solution
   int infeasible;  // 0 means feasible; -1 means infeasible (violates the capacity constraint)
@@ -55,24 +56,37 @@ void enumerate()
   }
   QUIET=1;
   best_value=0;
+  best_weight=0;
 
   while(!(next_binary(&solution[1], Nitems)))
   {
     /* ADD CODE IN HERE TO KEEP TRACK OF FRACTION OF ENUMERATION DONE */
     cnt++;
+    printf("\r%.0f / %.0f, ", cnt, pow(2, Nitems));
     j = cnt / pow(2, Nitems) * 100;
     if((int)cnt % condition == 0)
     {
-      printf("Progress: %.0f%% [", j);
-      for(i = 1; i <= 10; i++)
+      if(round(j) == 100)
       {
-        printf("=");
-        if(i > j/10 && i < j/10 + 1)
-        {
-          printf(">");
-        }
+        printf("Progress: 100%%, Completed.");
       }
-      printf("]\n");
+      else
+      {
+        printf("Progress: %.0f%% [", j);
+        for(i = 1; i <= 10; i++)
+        {
+          if(i > j/10 && i < j/10 + 1)
+          {
+            printf(">");
+          }
+          else
+          {
+            printf("=");
+          }
+        }
+        printf("]\r");
+        fflush(stdout);
+      }
     }
     // calculates the value and weight and feasibility:
     infeasible=check_evaluate_and_print_sol(solution, &total_value, &total_weight);  
@@ -82,6 +96,7 @@ void enumerate()
     if(!infeasible && total_value > best_value)
     {
       best_value = total_value;
+      best_weight = total_weight;
       for(i = 1; i <= Nitems; i++)
       {
         best_solution[i] = solution[i];
@@ -89,13 +104,17 @@ void enumerate()
     }
   }
   /* ADD CODE TO PRINT OUT BEST SOLUTION */
-  printf("Best solution is: ");
+  printf("\nBest solution is: ");
   for(i = 1; i <= Nitems; i++)
   {
-    printf("%d ", best_solution[i]);
+    if(best_solution[i] != 0)
+    {
+      printf("%d ", i);
+    }
   }
   printf("\n");
   printf("Best value is: %d\n", best_value);
+  printf("Weight is: %d <= Capacity: %d\n", best_weight, Capacity);
 
 }
 

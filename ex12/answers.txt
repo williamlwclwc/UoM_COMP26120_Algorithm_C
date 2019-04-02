@@ -1,17 +1,26 @@
 1. For large instances, you cannot use enumeration. Why? 
-How large an instance do you think you can solve on the lab PCs using enumeration
+Because it will need exponential scale of time to do enumeration(i.e. 
+for each item, there are 2 possibilities, take, 1, and discard, 0, so
+for n items, we have to enumerate 2^n times, which will consume a lot of time).
+
+How large an instance do you think you can solve on the lab PCs using enumeration?
+We can assume that each loop will take 1us, so assume we there are n items, 
+so we will need approximate 2^n us. And assume we can accept 2min(for ariline at most), 
+which is 120,000,000us, so the maximum number of item (i.e. n) we can accept is around 26-27.
 
 2. Run the other three algorithms on the following knapsack problem instances and note what happens.
 easy.200.4.txt:
 (1) dp: value=4077 weight=2568 <= Capacity=2568: Feasible
 (2) bnb: value=4077 weight=2568 <= Capacity=2568: Feasible
-(3) greedy: value=4074 weight=2563 <= Capacity=2568: Feasible
+(3) greedy: value=4075 weight=2568 <= Capacity=2568: Feasible
 hard1.200.11.txt:
 (1) dp: value=126968 weight=101268 <= Capacity=101268: Feasible
 (2) bnb: insert: Assertion `QueueSize<SIZE-1' failed. Aborted (core dumped)
-(3) greedy: value=124047 weight=98647 <= Capacity=101268: Feasible
+(3) greedy: value=126579 weight=100879 <= Capacity=101268: Feasible
 hard1.2000.1.txt:
-(1) dp: killed
+(1) dp: 
+school server: value=1205259 weight=942759 <= Capacity=942759: Feasible 
+own computer: killed
 (2) bnb: insert: Assertion `QueueSize<SIZE-1' failed. Aborted (core dumped)
 (3) greedy: value=1205167 weight=942667 <= Capacity=942759: Feasible
 
@@ -20,21 +29,27 @@ None of them.
 
 Does dynamic programming work on all instances, and why/why not? 
 Work well on the first 2 instances, but for hard1.2000.1.txt, it will 
+be killed on my own machine, however, it works on school's server, which 
+indicates that dynamic programming is not memory-friendly.
 
 Does branch-and-bound come to a stop on all instances?
 Yes, it will find a optimal solution or it will reach the limit 
-of the queue size, so the program will abort.
+of the queue size(aborted).
 
 3. Can you explain WHY the hard1 instances are easy or hard (cause problems) for 
-(i) greedy: easy.
-(ii) branch-and-bound: hard
-(iii) dynamic programming: easy. 
+(i) greedy: easy, the time complexity is low(O(n)), but might not get the optimal solution. 
+(ii) branch-and-bound: hard, because we might often insert two or one child solution
+into the queue, but can only remove one solution from the queue, so our queue might 
+get burst increase and reach the limit size of the queue quickly. 
+(iii) dynamic programming: easy, but need more space.
 
 4. The airline has problems of size 500-2000 of similar type to the hard1 instances. 
 Which algorithm(s) do you recommend using and why? 
 Dynamic programming is recommended, because it will solve the problem like hard1 
 relatively quickly, and it can guarantee the optimal solution. It has the disadvantage 
-that it will need more space, however, we can free the spaces after each hard1 instances 
-are solved.
+that it will need more space.
 
 What should they do in case the algorithm runs out of time?
+If the dynamic programming runs out time, we can run greedy instead, 
+even if greedy method cannot guarantee the optimal solution, we can 
+get a "good" solution, and it is really fast.
