@@ -12,7 +12,7 @@ elGamal: elGamal.o
 	$(CC) $(CFLAGS) elGamal.o -o elGamal $(LDFLAGS)
 
 elGamalGMP: elGamalGMP.o 
-	$(CC) $(CFLAGS) elGamalGMP.o -o elGamalGMP $(LDFLAGS)
+	$(CC) $(CFLAGS) elGamalGMP.o -o elGamalGMP $(LDFLAGS) -lgmp
 
 clean:
 	rm -rf *o dl elGamal elGamalGMP
