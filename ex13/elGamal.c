@@ -21,47 +21,70 @@ unsigned long hcf(unsigned long a, unsigned long b)
 }
 
 // task2: fast modular exponentiation
-// complexity: linear in the size of x
+// complexity: logx, also linear in the size of x
 unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
 {
-    unsigned long q = 0, result = 1, temp;
-    const int bits = sizeof(unsigned long) * 8;
-    // printf("bits: %d\n", bits);
-    int i = bits - 1;
-    int binary_x[bits];
-    // transfer x into binary
-    while(x != 0)
+    unsigned long t;
+    if(x == 0)
     {
-        temp = x % 2;
-        binary_x[i] = temp;
-        i--;
-        x = x / 2;
+        return 1; // g^0 = 1 mop p
     }
-    if(i > 0)
+    // x is even
+    if(x % 2 == 0)
     {
-        for(int j = i; j >= 0; j--)
-        {
-            binary_x[j] = 0;
-        }
+        t = fme(g, x/2, p); // recussive calculate g^(x/2)
+        return (t*t) % p; // (g^(x/2))^2 = g^x
     }
-    // print out x binary
-    // for(int j = 0; j < bits; j++)
-    // {
-    //     printf("%d", binary_x[j]);
-    // }
-    // printf("\n");
-    for(i = 0; i < bits; i++)
+    else
     {
-        q = 2 * q;
-        result = (result * result) % p;
-        if(binary_x[i] == 1)
-        {
-            q++;
-            result = (result * g) % p;
-        }
-    }
-    return result;
+        // odd: separate a g, g^x = g*g^(x-1)
+        // recussive calculate g^((x-1)/2)
+        t = fme(g, (x-1)/2, p);
+        // g* (g^((x-1)/2))^2 = g*g^(x-1) = g^x 
+        return (g*((t*t) % p)) % p;
+    } 
+
 }
+// unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
+// {
+//     unsigned long q = 0, result = 1, temp;
+//     const int bits = sizeof(unsigned long) * 8;
+//     // printf("bits: %d\n", bits);
+//     int i = bits - 1;
+//     int binary_x[bits];
+//     // transfer x into binary
+//     while(x != 0)
+//     {
+//         temp = x % 2;
+//         binary_x[i] = temp;
+//         i--;
+//         x = x / 2;
+//     }
+//     if(i > 0)
+//     {
+//         for(int j = i; j >= 0; j--)
+//         {
+//             binary_x[j] = 0;
+//         }
+//     }
+//     // print out x binary
+//     // for(int j = 0; j < bits; j++)
+//     // {
+//     //     printf("%d", binary_x[j]);
+//     // }
+//     // printf("\n");
+//     for(i = 0; i < bits; i++)
+//     {
+//         q = 2 * q;
+//         result = (result * result) % p;
+//         if(binary_x[i] == 1)
+//         {
+//             q++;
+//             result = (result * g) % p;
+//         }
+//     }
+//     return result;
+// }
 
 // task4: inverse modulo prime
 // complexity: the same as task1, linear in the size of y
@@ -142,7 +165,7 @@ void elGame()
             }
             if(pk != 0)
             {
-                printf("public key saved in system: %ld\n", pk);
+                // printf("public key saved in system: %ld\n", pk);
             }
             else
             {

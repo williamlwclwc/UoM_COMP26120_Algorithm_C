@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define MAX_SIZE 200
+#define MAX_SIZE 100
 
 // task1: highest common factor
 // complexity: linear in the size of a
@@ -23,10 +23,46 @@ void hcf(mpz_t result, mpz_t a, mpz_t b)
 }
 
 // task2: fast modular exponentiation
-// complexity: linear in the size of x
+// complexity: logx, also linear in the size of x
 void fme(mpz_t result, mpz_t g, mpz_t x, mpz_t p)
 {
-    mpz_powm(result, g, x, p);
+    // mpz_powm(result, g, x, p);
+    mpz_t t, x_2, two;
+    mpz_init(t);
+    mpz_init(x_2);
+    mpz_init(two);
+    mpz_set_str(two, "2", 10);
+    if(mpz_cmp_d(x, 0) == 0)
+    {
+        mpz_set_d(result, 1);
+        return;
+    }
+    mpz_mod(t, x, two);
+    if(mpz_cmp_d(t, 0) == 0)
+    {
+        // t = fme(g, x/2, p);
+        // return (t*t) % p;
+        mpz_set_str(x_2, "2", 10);
+        mpz_div(x_2, x, x_2);
+        fme(t, g, x_2, p);
+        mpz_mul(t, t, t);
+        mpz_mod(t, t, p);
+        mpz_set(result, t);
+    }
+    else
+    {
+        // t = fme(g, (x-1)/2, p);
+        // return (g*((t*t) % p)) % p;
+        mpz_sub_ui(t, x, 1);
+        mpz_set_str(x_2, "2", 10);
+        mpz_div(x_2, t, x_2);
+        fme(t, g, x_2, p);
+        mpz_mul(t, t, t);
+        mpz_mod(t, t, p);
+        mpz_mul(t, g, t);
+        mpz_mod(t, t, p);
+        mpz_set(result, t);
+    }
 }
 
 // task4: inverse modulo prime
@@ -143,7 +179,7 @@ void elGame()
             }
             if(mpz_cmp_d(pk, 0) != 0)
             {
-                gmp_printf("public key saved in system: %Zd\n", pk);
+                // gmp_printf("public key saved in system: %Zd\n", pk);
             }
             else
             {
