@@ -27,6 +27,7 @@ unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
 
 // task3: discrete logarithm
 // complexity: exponential: p = 2^n, n is number of bits, p*logp
+// complexity for fme is logn but its reverse dl is exponential, so it is hard to invert
 unsigned long dl(unsigned long y, unsigned long g, unsigned long p)
 {
     unsigned long x = 0, result = 0;

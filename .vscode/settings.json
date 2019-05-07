@@ -1,5 +1,8 @@
 {
     "C_Cpp.dimInactiveRegions": false,
     "C_Cpp.errorSquiggles": "Disabled",
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "files.associations": {
+        "string.h": "c"
+    }
 }

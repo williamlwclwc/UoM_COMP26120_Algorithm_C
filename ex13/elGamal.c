@@ -115,6 +115,7 @@ unsigned long hcf_2(unsigned long a, unsigned long b, long *x, long *y)
 }
 
 // complexity: the same as task1, linear in the size of y
+// we just use hcf inside, other statements are O(1)
 unsigned long imp(unsigned long y, unsigned long p)
 {
     long x, b;
