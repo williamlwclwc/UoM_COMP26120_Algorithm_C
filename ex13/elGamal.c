@@ -4,8 +4,12 @@
 #include <time.h>
 #define MAX_SIZE 20
 
-// task1: highest common factor
-// complexity: linear in the size of a
+// task1: highest common factor(a>=b)
+// ai is the value of the first argument on the ith recursive call to hcf 
+// if ah+1 <= ah/2, then ah+2 < ah/2
+// if ah+1 > ah/2, then ah+2 = ah mod ah+1 = ah - ah+1 < ah/2
+// so ah+2 < ah/2: n = max(2, 2loga)
+// complexity: loga, linear in the size of a
 unsigned long hcf(unsigned long a, unsigned long b)
 {
     unsigned long r;
@@ -21,6 +25,7 @@ unsigned long hcf(unsigned long a, unsigned long b)
 }
 
 // task2: fast modular exponentiation
+// divide and conquer, each time x/2 until x=0
 // complexity: logx, also linear in the size of x
 unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
 {
@@ -43,7 +48,6 @@ unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
         // g* (g^((x-1)/2))^2 = g*g^(x-1) = g^x 
         return (g*((t*t) % p)) % p;
     } 
-
 }
 // unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
 // {
@@ -87,7 +91,6 @@ unsigned long fme(unsigned long g, unsigned long x, unsigned long p)
 // }
 
 // task4: inverse modulo prime
-// complexity: the same as task1, linear in the size of y
 // xy + bp = gcd(y, p)
 // if y and p are coprime, then gcd(y, p) = 1, xy + bp = 1 
 // mod b: (xy + bp) mod p = 1 mod p -> xy mod p = 1 then we return x 
@@ -111,6 +114,7 @@ unsigned long hcf_2(unsigned long a, unsigned long b, long *x, long *y)
     return gcd; 
 }
 
+// complexity: the same as task1, linear in the size of y
 unsigned long imp(unsigned long y, unsigned long p)
 {
     long x, b;
