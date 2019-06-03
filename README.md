@@ -23,3 +23,7 @@ COMP26120 Algorithms and Imperative Programming Labs
 ## Lab10: Testing the small world hypothesis
 
 ## Lab11: Exploring NP-Completeness with Graph colouring
+
+## Lab12: The 0/1 Knapsack Problem
+
+## Lab13: Public-key CryptoSystems
